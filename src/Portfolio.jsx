@@ -11,7 +11,7 @@ import {
   User,
   GraduationCap,
 } from "lucide-react";
-
+import img from "./assets/photo_2025-12-17_14-26-21.jpg";
 export default function Portfolio() {
   const [darkMode, setDarkMode] = useState(false);
 
@@ -176,7 +176,7 @@ export default function Portfolio() {
                 <div className="w-full h-full rounded-full overflow-hidden">
                   {/* ضع صورتك هنا - استبدل src بمسار الصورة */}
                   <img
-                    src="/src/assets/photo_2025-12-17_14-26-21.jpg"
+                    src={img}
                     alt="Abdallah Mohamed"
                     className="w-full h-full object-cover object-top scale-110"
                   />
