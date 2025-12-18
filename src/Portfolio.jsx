@@ -8,9 +8,9 @@ import {
   ExternalLink,
   Code,
   Briefcase,
-  User,
   GraduationCap,
 } from "lucide-react";
+
 import img from "./assets/photo_2025-12-17_14-26-21.jpg";
 export default function Portfolio() {
   const [darkMode, setDarkMode] = useState(false);
@@ -20,7 +20,7 @@ export default function Portfolio() {
   };
 
   const skills = {
-    languages: [ "JavaScript", "C++", "Python", "HTML", "CSS",],
+    languages: ["JavaScript", "C++", "Python", "HTML", "CSS"],
     frontend: ["React.js", "Tailwind CSS", "Bootstrap"],
     backend: ["Node.js", "Express.js", "MongoDB"],
     tools: [
@@ -79,18 +79,88 @@ export default function Portfolio() {
 
   return (
     <div
-      className={`min-h-screen transition-colors duration-300 ${
+      className={`min-h-screen transition-colors duration-500 ${
         darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
       }`}
     >
+      {/* Animated Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div
+          className={`absolute top-0 -left-4 w-72 h-72 ${
+            darkMode ? "bg-blue-500" : "bg-blue-300"
+          } rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob`}
+        ></div>
+        <div
+          className={`absolute top-0 -right-4 w-72 h-72 ${
+            darkMode ? "bg-purple-500" : "bg-purple-300"
+          } rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000`}
+        ></div>
+        <div
+          className={`absolute -bottom-8 left-20 w-72 h-72 ${
+            darkMode ? "bg-pink-500" : "bg-pink-300"
+          } rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000`}
+        ></div>
+      </div>
+
+      {/* Animation Styles */}
+      <style>{`
+        @keyframes blob {
+          0% { transform: translate(0px, 0px) scale(1); }
+          33% { transform: translate(30px, -50px) scale(1.1); }
+          66% { transform: translate(-20px, 20px) scale(0.9); }
+          100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+          animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+          animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+          animation-delay: 4s;
+        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
+        }
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(30px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scaleIn {
+          from { opacity: 0; transform: scale(0.9); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        .animate-fadeInUp {
+          animation: fadeInUp 0.8s ease-out;
+        }
+        .animate-scaleIn {
+          animation: scaleIn 0.5s ease-out;
+        }
+        /* ===== Scroll Reveal ===== */
+  .scroll-hidden {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  .animate-show {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.8s ease-out;
+  }
+      `}</style>
+
       {/* Navigation */}
       <nav
-        className={`fixed top-0 w-full z-50 transition-colors duration-300 ${
+        className={`fixed top-0 w-full z-50 transition-all duration-500 ${
           darkMode ? "bg-gray-900/95" : "bg-white/95"
         } backdrop-blur-sm shadow-md`}
       >
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center animate-fadeInUp">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent hover:scale-110 transition-transform duration-300 cursor-pointer">
             MrLazyC0der
           </h1>
 
@@ -98,7 +168,7 @@ export default function Portfolio() {
             <div className="hidden md:flex gap-6">
               <button
                 onClick={() => scrollToSection("home")}
-                className={`hover:text-blue-600 transition-colors ${
+                className={`hover:text-blue-600 transition-all duration-300 hover:scale-110 ${
                   darkMode ? "text-gray-300" : "text-gray-700"
                 }`}
               >
@@ -106,7 +176,7 @@ export default function Portfolio() {
               </button>
               <button
                 onClick={() => scrollToSection("about")}
-                className={`hover:text-blue-600 transition-colors ${
+                className={`hover:text-blue-600 transition-all duration-300 hover:scale-110 ${
                   darkMode ? "text-gray-300" : "text-gray-700"
                 }`}
               >
@@ -114,7 +184,7 @@ export default function Portfolio() {
               </button>
               <button
                 onClick={() => scrollToSection("skills")}
-                className={`hover:text-blue-600 transition-colors ${
+                className={`hover:text-blue-600 transition-all duration-300 hover:scale-110 ${
                   darkMode ? "text-gray-300" : "text-gray-700"
                 }`}
               >
@@ -122,7 +192,7 @@ export default function Portfolio() {
               </button>
               <button
                 onClick={() => scrollToSection("experience")}
-                className={`hover:text-blue-600 transition-colors ${
+                className={`hover:text-blue-600 transition-all duration-300 hover:scale-110 ${
                   darkMode ? "text-gray-300" : "text-gray-700"
                 }`}
               >
@@ -130,7 +200,7 @@ export default function Portfolio() {
               </button>
               <button
                 onClick={() => scrollToSection("projects")}
-                className={`hover:text-blue-600 transition-colors ${
+                className={`hover:text-blue-600 transition-all duration-300 hover:scale-110 ${
                   darkMode ? "text-gray-300" : "text-gray-700"
                 }`}
               >
@@ -138,7 +208,7 @@ export default function Portfolio() {
               </button>
               <button
                 onClick={() => scrollToSection("contact")}
-                className={`hover:text-blue-600 transition-colors ${
+                className={`hover:text-blue-600 transition-all duration-300 hover:scale-110 ${
                   darkMode ? "text-gray-300" : "text-gray-700"
                 }`}
               >
@@ -148,7 +218,7 @@ export default function Portfolio() {
 
             <button
               onClick={() => setDarkMode(!darkMode)}
-              className={`p-2 rounded-full transition-all ${
+              className={`p-2 rounded-full transition-all duration-300 hover:rotate-180 hover:scale-110 ${
                 darkMode
                   ? "bg-gray-800 hover:bg-gray-700"
                   : "bg-gray-200 hover:bg-gray-300"
@@ -167,56 +237,62 @@ export default function Portfolio() {
       {/* Hero Section */}
       <section
         id="home"
-        className="min-h-screen flex items-center justify-center pt-20 px-6"
+        className="min-h-screen flex items-center justify-center pt-20 px-6 relative"
       >
         <div className="max-w-4xl text-center">
-          <div className="flex justify-center mb-8">
-            <div className="relative">
-              <div className="w-56 h-56 rounded-full border-4 border-blue-600 p-2 shadow-xl bg-white">
-                <div className="w-full h-full rounded-full overflow-hidden">
-                  {/* ضع صورتك هنا - استبدل src بمسار الصورة */}
+          <div className="flex justify-center mb-8 animate-scaleIn">
+            <div className="relative animate-float">
+              <div className="w-56 h-56 rounded-full border-4 border-blue-600 p-2 shadow-2xl bg-white hover:border-blue-400 transition-all duration-300 hover:shadow-blue-500/50">
+                <div className="w-full h-full rounded-full overflow-hidden bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-6xl font-bold">
                   <img
                     src={img}
                     alt="Abdallah Mohamed"
-                    className="w-full h-full object-cover object-top scale-110"
+                    className="w-full h-full object-cover"
                   />
                 </div>
               </div>
-              <div className="absolute -bottom-2 -right-2 bg-green-500 w-10 h-10 rounded-full border-4 border-white dark:border-gray-900"></div>
+              <div className="absolute -bottom-2 -right-2 bg-green-500 w-10 h-10 rounded-full border-4 border-white dark:border-gray-900 animate-pulse"></div>
             </div>
           </div>
 
-          <h1 className="text-5xl md:text-6xl font-bold mb-4">
+          <h1 className="text-5xl md:text-6xl font-bold mb-4 animate-fadeInUp">
             Hello, I'm{" "}
-            <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent hover:from-blue-400 hover:to-purple-600 transition-all duration-500">
               Abdallah Mohamed
             </span>
           </h1>
-          <p className="text-xl md:text-2xl mb-6 text-gray-600 dark:text-gray-400">
+          <p
+            className="text-xl md:text-2xl mb-6 text-gray-600 dark:text-gray-400 animate-fadeInUp"
+            style={{ animationDelay: "0.2s" }}
+          >
             Computer Science Student | Full Stack Developer
           </p>
           <p
-            className={`text-lg mb-8 max-w-2xl mx-auto ${
+            className={`text-lg mb-8 max-w-2xl mx-auto animate-fadeInUp ${
               darkMode ? "text-gray-300" : "text-gray-600"
             }`}
+            style={{ animationDelay: "0.4s" }}
           >
             Passionate about building real-world projects and continuously
             learning new technologies using the MERN Stack
           </p>
 
-          <div className="flex gap-4 justify-center">
+          <div
+            className="flex gap-4 justify-center animate-fadeInUp"
+            style={{ animationDelay: "0.6s" }}
+          >
             <button
               onClick={() => scrollToSection("contact")}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-semibold transition-all hover:scale-105 shadow-lg"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-semibold transition-all hover:scale-110 hover:shadow-2xl hover:shadow-blue-500/50 duration-300"
             >
               Get In Touch
             </button>
             <button
               onClick={() => scrollToSection("projects")}
-              className={`px-8 py-3 rounded-full font-semibold transition-all hover:scale-105 ${
+              className={`px-8 py-3 rounded-full font-semibold transition-all hover:scale-110 duration-300 ${
                 darkMode
-                  ? "bg-gray-800 hover:bg-gray-700"
-                  : "bg-white hover:bg-gray-100 shadow-lg"
+                  ? "bg-gray-800 hover:bg-gray-700 hover:shadow-2xl"
+                  : "bg-white hover:bg-gray-100 shadow-lg hover:shadow-2xl"
               }`}
             >
               View Projects
@@ -240,15 +316,13 @@ export default function Portfolio() {
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div>
               <div
-                className={`p-6 rounded-2xl ${
+                className={`p-6 rounded-2xl hover:scale-105 transition-all duration-300 ${
                   darkMode ? "bg-gray-900" : "bg-gray-50"
                 }`}
               >
                 <GraduationCap className="w-12 h-12 text-blue-600 mb-4" />
                 <h3 className="text-2xl font-bold mb-2">Education</h3>
-                <p
-                  className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}
-                >
+                <p className={darkMode ? "text-gray-300" : "text-gray-600"}>
                   Bachelor of Computer Science
                   <br />
                   <span className="text-blue-600">Mansoura University</span>
@@ -259,7 +333,7 @@ export default function Portfolio() {
             </div>
 
             <div
-              className={`p-6 rounded-2xl ${
+              className={`p-6 rounded-2xl hover:scale-105 transition-all duration-300 ${
                 darkMode ? "bg-gray-900" : "bg-gray-50"
               }`}
             >
@@ -293,7 +367,7 @@ export default function Portfolio() {
             <div
               className={`p-6 rounded-2xl ${
                 darkMode ? "bg-gray-800" : "bg-white"
-              } shadow-lg hover:shadow-xl transition-all`}
+              } shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300`}
             >
               <h3 className="text-xl font-bold mb-4 text-blue-600">
                 Languages
@@ -302,7 +376,7 @@ export default function Portfolio() {
                 {skills.languages.map((skill) => (
                   <span
                     key={skill}
-                    className={`px-3 py-1 rounded-full text-sm ${
+                    className={`px-3 py-1 rounded-full text-sm hover:scale-110 transition-transform ${
                       darkMode ? "bg-gray-900" : "bg-gray-100"
                     }`}
                   >
@@ -315,14 +389,14 @@ export default function Portfolio() {
             <div
               className={`p-6 rounded-2xl ${
                 darkMode ? "bg-gray-800" : "bg-white"
-              } shadow-lg hover:shadow-xl transition-all`}
+              } shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300`}
             >
               <h3 className="text-xl font-bold mb-4 text-blue-600">Frontend</h3>
               <div className="flex flex-wrap gap-2">
                 {skills.frontend.map((skill) => (
                   <span
                     key={skill}
-                    className={`px-3 py-1 rounded-full text-sm ${
+                    className={`px-3 py-1 rounded-full text-sm hover:scale-110 transition-transform ${
                       darkMode ? "bg-gray-900" : "bg-gray-100"
                     }`}
                   >
@@ -335,14 +409,14 @@ export default function Portfolio() {
             <div
               className={`p-6 rounded-2xl ${
                 darkMode ? "bg-gray-800" : "bg-white"
-              } shadow-lg hover:shadow-xl transition-all`}
+              } shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300`}
             >
               <h3 className="text-xl font-bold mb-4 text-blue-600">Backend</h3>
               <div className="flex flex-wrap gap-2">
                 {skills.backend.map((skill) => (
                   <span
                     key={skill}
-                    className={`px-3 py-1 rounded-full text-sm ${
+                    className={`px-3 py-1 rounded-full text-sm hover:scale-110 transition-transform ${
                       darkMode ? "bg-gray-900" : "bg-gray-100"
                     }`}
                   >
@@ -355,14 +429,14 @@ export default function Portfolio() {
             <div
               className={`p-6 rounded-2xl ${
                 darkMode ? "bg-gray-800" : "bg-white"
-              } shadow-lg hover:shadow-xl transition-all`}
+              } shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300`}
             >
               <h3 className="text-xl font-bold mb-4 text-blue-600">Tools</h3>
               <div className="flex flex-wrap gap-2">
                 {skills.tools.map((skill) => (
                   <span
                     key={skill}
-                    className={`px-3 py-1 rounded-full text-sm ${
+                    className={`px-3 py-1 rounded-full text-sm hover:scale-110 transition-transform ${
                       darkMode ? "bg-gray-900" : "bg-gray-100"
                     }`}
                   >
@@ -391,9 +465,9 @@ export default function Portfolio() {
             {experience.map((exp, index) => (
               <div
                 key={index}
-                className={`p-6 rounded-2xl ${
+                className={`p-6 rounded-2xl hover:scale-105 hover:shadow-2xl transition-all duration-300 ${
                   darkMode ? "bg-gray-900" : "bg-gray-50"
-                } hover:shadow-lg transition-all`}
+                }`}
               >
                 <div className="flex items-start gap-4">
                   <div className="p-3 bg-blue-600 rounded-lg">
@@ -406,7 +480,7 @@ export default function Portfolio() {
                         <p className="text-blue-600">{exp.company}</p>
                       </div>
                       {exp.current && (
-                        <span className="px-3 py-1 bg-green-500 text-white text-sm rounded-full">
+                        <span className="px-3 py-1 bg-green-500 text-white text-sm rounded-full animate-pulse">
                           حالياً
                         </span>
                       )}
@@ -444,7 +518,7 @@ export default function Portfolio() {
                 key={index}
                 className={`rounded-2xl overflow-hidden ${
                   darkMode ? "bg-gray-800" : "bg-white"
-                } shadow-lg hover:shadow-2xl transition-all hover:-translate-y-2`}
+                } shadow-lg hover:shadow-2xl transition-all hover:-translate-y-2 duration-300`}
               >
                 <div className="p-6">
                   <h3 className="text-2xl font-bold mb-3">{project.title}</h3>
@@ -460,7 +534,7 @@ export default function Portfolio() {
                     {project.tech.map((tech) => (
                       <span
                         key={tech}
-                        className="px-3 py-1 bg-blue-600 text-white text-sm rounded-full"
+                        className="px-3 py-1 bg-blue-600 text-white text-sm rounded-full hover:scale-110 transition-transform"
                       >
                         {tech}
                       </span>
@@ -470,7 +544,7 @@ export default function Portfolio() {
                   <div className="flex gap-3">
                     <a
                       href={project.github}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all hover:scale-105 ${
                         darkMode
                           ? "bg-gray-900 hover:bg-gray-700"
                           : "bg-gray-100 hover:bg-gray-200"
@@ -481,7 +555,7 @@ export default function Portfolio() {
                     </a>
                     <a
                       href={project.demo}
-                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all hover:scale-105"
                     >
                       <ExternalLink className="w-4 h-4" />
                       <span className="text-sm">Demo</span>
@@ -519,7 +593,7 @@ export default function Portfolio() {
               href="https://github.com/MrLazyC0der"
               target="_blank"
               rel="noopener noreferrer"
-              className={`p-4 rounded-full transition-all hover:scale-110 ${
+              className={`p-4 rounded-full transition-all hover:scale-125 hover:rotate-12 duration-300 ${
                 darkMode
                   ? "bg-gray-900 hover:bg-gray-700"
                   : "bg-gray-100 hover:bg-gray-200"
@@ -531,7 +605,7 @@ export default function Portfolio() {
               href="https://www.linkedin.com/in/engabdallahmohamed/"
               target="_blank"
               rel="noopener noreferrer"
-              className={`p-4 rounded-full transition-all hover:scale-110 ${
+              className={`p-4 rounded-full transition-all hover:scale-125 hover:rotate-12 duration-300 ${
                 darkMode
                   ? "bg-gray-900 hover:bg-gray-700"
                   : "bg-gray-100 hover:bg-gray-200"
@@ -541,7 +615,7 @@ export default function Portfolio() {
             </a>
             <a
               href="mailto:engabdallahmo@icloud.com"
-              className={`p-4 rounded-full transition-all hover:scale-110 ${
+              className={`p-4 rounded-full transition-all hover:scale-125 hover:rotate-12 duration-300 ${
                 darkMode
                   ? "bg-gray-900 hover:bg-gray-700"
                   : "bg-gray-100 hover:bg-gray-200"
