@@ -237,7 +237,7 @@ export default function Portfolio() {
       {/* Hero Section */}
       <section
         id="home"
-        className="min-h-screen flex items-center justify-center pt-20 px-6 relative"
+        className="min-h-screen flex items-center justify-center pt-32 sm:pt-20 px-6 relative"
       >
         <div className="max-w-4xl text-center">
           <div className="flex justify-center mb-8 animate-scaleIn">
