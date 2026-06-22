@@ -1,644 +1,434 @@
-import React, { useState } from "react";
-import {
-  Moon,
-  Sun,
-  Github,
-  Linkedin,
-  Mail,
-  ExternalLink,
-  Code,
-  Briefcase,
-  GraduationCap,
-} from "lucide-react";
-
+import { useState, useEffect, useRef } from "react";
+import { Github, Linkedin, Mail, ExternalLink, ArrowUpRight, Menu, X } from "lucide-react";
 import img from "./assets/photo_2025-12-17_14-26-21.jpg";
-export default function Portfolio() {
-  const [darkMode, setDarkMode] = useState(false);
+// ─── Design tokens ───────────────────────────────────────────────
+const C = {
+  bg: "#F5F5F0",
+  surface: "#FFFFFF",
+  accent: "#0A84FF",
+  accentMuted: "#E8F2FF",
+  text: "#1A1A1A",
+  muted: "#6B6B6B",
+  border: "#E5E5E5",
+};
 
-  const scrollToSection = (id) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-  };
+// ─── Data ────────────────────────────────────────────────────────
+const skills = {
+  Backend:   ["Node.js", "Express.js", "MongoDB", "Redis", "JWT Auth"],
+  Frontend:  ["React.js", "Tailwind CSS", "Bootstrap", "HTML", "CSS"],
+  Languages: ["JavaScript", "TypeScript", "C++", "Python"],
+  Tools:     ["Git", "GitHub", "Postman", "Docker", "Vercel", "VS Code"],
+};
 
-  const skills = {
-    languages: ["JavaScript", "C++", "Python", "HTML", "CSS"],
-    frontend: ["React.js", "Tailwind CSS", "Bootstrap"],
-    backend: ["Node.js", "Express.js", "MongoDB"],
-    tools: [
-      "Git",
-      "GitHub",
-      "VS Code",
-      "Postman",
-      "MongoDB Compass",
-      "npm",
-      "Docker",
-      "Vercel",
-    ],
-  };
+const projects = [
+  {
+    name: "Sara7a",
+    type: "Backend",
+    description:
+      "Anonymous messaging platform with dual-token JWT authentication, Redis-based session management, role-based access control, and event-driven email notifications.",
+    tech: ["Node.js", "Express", "MongoDB", "Redis", "JWT"],
+    github: "#",
+    demo: null,
+  },
+  {
+    name: "Note App",
+    type: "Frontend",
+    description:
+      "Task and note management app built with React, focused on clean component architecture and state management.",
+    tech: ["React", "JavaScript", "CSS"],
+    github: "#",
+    demo: "#",
+  },
+  {
+    name: "Weather Dashboard",
+    type: "Frontend",
+    description:
+      "Responsive weather dashboard with REST API integration and dynamic UI updates.",
+    tech: ["React", "Tailwind CSS", "API"],
+    github: "https://github.com/MrLazyC0der/Weather_Dashboard",
+    demo: "https://weather-dashboard-nine-ochre.vercel.app/",
+  },
+];
 
-  const experience = [
-    {
-      title: "Backend Developer",
-      company: "Route Training",
-      period: "نوفمبر 2025 - حالياً",
-      description:
-        "التركيز على تطوير Backend باستخدام Node.js, Express.js, MongoDB",
-      current: true,
-    },
-    {
-      title: "Frontend Developer",
-      company: "Route Training",
-      period: "فبراير 2025 - أكتوبر 2025",
-      description: "تطوير واجهات المستخدم باستخدام React.js و Tailwind CSS",
-      current: false,
-    },
+const experience = [
+  {
+    role: "Backend Developer",
+    org: "Route Academy",
+    period: "Nov 2024 – Present",
+    current: true,
+    desc: "Node.js Diploma — building production-grade APIs with Express, MongoDB, and Redis.",
+  },
+  {
+    role: "Frontend Developer",
+    org: "Route Academy",
+    period: "Feb 2024 – Oct 2024",
+    current: false,
+    desc: "Frontend Diploma — building UI with React and Tailwind CSS.",
+  },
+];
+
+// ─── Scroll reveal hook ──────────────────────────────────────────
+function useReveal() {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect(); } },
+      { threshold: 0.12 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+  return [ref, visible];
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────
+const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+
+const revealStyle = (visible, delay = 0) => ({
+  opacity: visible ? 1 : 0,
+  transform: visible ? "translateY(0)" : "translateY(24px)",
+  transition: `opacity 0.6s ease ${delay}s, transform 0.6s ease ${delay}s`,
+});
+
+// ─── Sub-components ──────────────────────────────────────────────
+function Tag({ label, accent }) {
+  return (
+    <span style={{
+      display: "inline-block", padding: "3px 10px", borderRadius: 99,
+      fontSize: 12, fontWeight: 500,
+      background: accent ? C.accentMuted : "#F0F0EC",
+      color: accent ? C.accent : C.muted,
+      letterSpacing: "0.01em",
+    }}>
+      {label}
+    </span>
+  );
+}
+
+function Divider() {
+  return <div style={{ borderTop: `1px solid ${C.border}` }} />;
+}
+
+// ─── Nav ─────────────────────────────────────────────────────────
+function Nav() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const navLinks = [
+    { label: "About", target: "about" },
+    { label: "Skills", target: "skills" },
+    { label: "Experience", target: "experience" },
+    { label: "Projects", target: "projects" },
+    { label: "Contact", target: "contact" },
   ];
 
-  const projects = [
-    {
-      title: "E-Commerce Platform (UNDER DEVELOPMENT)",
-      description: "منصة تجارة إلكترونية متكاملة مع نظام دفع وإدارة منتجات",
-      tech: ["React", "Node.js", "MongoDB", "Express"],
-      github: "#",
-      demo: "#",
-    },
-    {
-      title: "EduTrack Pro - Management System",
-      description: "نظام احترافي لإدارة الطلاب والحضور والبيانات التعليمية",
-      tech: ["JavaScript", "Bootstrap", "CSS", "HTML"],
-      github: "https://github.com/MrLazyC0der/web-project",
-      demo: "https://github.com/MrLazyC0der/web-project",
-    },
-    {
-      title: "Weather Dashboard",
-      description: "لوحة تحكم للطقس مع API integration وتصميم responsive",
-      tech: ["React", "API", "Tailwind CSS"],
-      github: "https://github.com/MrLazyC0der/Weather_Dashboard",
-      demo: "https://weather-dashboard-nine-ochre.vercel.app/",
-    },
-  ];
+  const handleNav = (target) => {
+    scrollTo(target);
+    setMenuOpen(false);
+  };
 
   return (
-    <div
-      className={`min-h-screen transition-colors duration-500 ${
-        darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
-      }`}
-    >
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div
-          className={`absolute top-0 -left-4 w-72 h-72 ${
-            darkMode ? "bg-blue-500" : "bg-blue-300"
-          } rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob`}
-        ></div>
-        <div
-          className={`absolute top-0 -right-4 w-72 h-72 ${
-            darkMode ? "bg-purple-500" : "bg-purple-300"
-          } rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000`}
-        ></div>
-        <div
-          className={`absolute -bottom-8 left-20 w-72 h-72 ${
-            darkMode ? "bg-pink-500" : "bg-pink-300"
-          } rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000`}
-        ></div>
-      </div>
+    <>
+      <nav style={{
+        position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
+        background: "rgba(245,245,240,0.88)",
+        backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)",
+        borderBottom: `1px solid ${C.border}`,
+        padding: "0 24px", height: 56,
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+      }}>
+        <span style={{ fontSize: 15, fontWeight: 700, color: C.text, letterSpacing: "-0.01em" }}>
+          Abdallah<span style={{ color: C.accent }}>.</span>
+        </span>
 
-      {/* Animation Styles */}
-      <style>{`
-        @keyframes blob {
-          0% { transform: translate(0px, 0px) scale(1); }
-          33% { transform: translate(30px, -50px) scale(1.1); }
-          66% { transform: translate(-20px, 20px) scale(0.9); }
-          100% { transform: translate(0px, 0px) scale(1); }
-        }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-20px); }
-        }
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes scaleIn {
-          from { opacity: 0; transform: scale(0.9); }
-          to { opacity: 1; transform: scale(1); }
-        }
-        .animate-fadeInUp {
-          animation: fadeInUp 0.8s ease-out;
-        }
-        .animate-scaleIn {
-          animation: scaleIn 0.5s ease-out;
-        }
-        /* ===== Scroll Reveal ===== */
-  .scroll-hidden {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-
-  .animate-show {
-    opacity: 1;
-    transform: translateY(0);
-    transition: all 0.8s ease-out;
-  }
-      `}</style>
-
-      {/* Navigation */}
-      <nav
-        className={`fixed top-0 w-full z-50 transition-all duration-500 ${
-          darkMode ? "bg-gray-900/95" : "bg-white/95"
-        } backdrop-blur-sm shadow-md`}
-      >
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center animate-fadeInUp">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent hover:scale-110 transition-transform duration-300 cursor-pointer">
-            MrLazyC0der
-          </h1>
-
-          <div className="flex items-center gap-8">
-            <div className="hidden md:flex gap-6">
-              <button
-                onClick={() => scrollToSection("home")}
-                className={`hover:text-blue-600 transition-all duration-300 hover:scale-110 ${
-                  darkMode ? "text-gray-300" : "text-gray-700"
-                }`}
-              >
-                Home
-              </button>
-              <button
-                onClick={() => scrollToSection("about")}
-                className={`hover:text-blue-600 transition-all duration-300 hover:scale-110 ${
-                  darkMode ? "text-gray-300" : "text-gray-700"
-                }`}
-              >
-                About
-              </button>
-              <button
-                onClick={() => scrollToSection("skills")}
-                className={`hover:text-blue-600 transition-all duration-300 hover:scale-110 ${
-                  darkMode ? "text-gray-300" : "text-gray-700"
-                }`}
-              >
-                Skills
-              </button>
-              <button
-                onClick={() => scrollToSection("experience")}
-                className={`hover:text-blue-600 transition-all duration-300 hover:scale-110 ${
-                  darkMode ? "text-gray-300" : "text-gray-700"
-                }`}
-              >
-                Experience
-              </button>
-              <button
-                onClick={() => scrollToSection("projects")}
-                className={`hover:text-blue-600 transition-all duration-300 hover:scale-110 ${
-                  darkMode ? "text-gray-300" : "text-gray-700"
-                }`}
-              >
-                Projects
-              </button>
-              <button
-                onClick={() => scrollToSection("contact")}
-                className={`hover:text-blue-600 transition-all duration-300 hover:scale-110 ${
-                  darkMode ? "text-gray-300" : "text-gray-700"
-                }`}
-              >
-                Contact
-              </button>
-            </div>
-
-            <button
-              onClick={() => setDarkMode(!darkMode)}
-              className={`p-2 rounded-full transition-all duration-300 hover:rotate-180 hover:scale-110 ${
-                darkMode
-                  ? "bg-gray-800 hover:bg-gray-700"
-                  : "bg-gray-200 hover:bg-gray-300"
-              }`}
-            >
-              {darkMode ? (
-                <Sun className="w-5 h-5 text-yellow-400" />
-              ) : (
-                <Moon className="w-5 h-5 text-blue-600" />
-              )}
+        {/* Desktop links */}
+        <div style={{ display: "flex", gap: 28, alignItems: "center" }}
+             className="desktop-nav">
+          {navLinks.map(l => (
+            <button key={l.target} onClick={() => handleNav(l.target)}
+              style={{ color: C.muted, fontSize: 14, fontWeight: 500, background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}
+              onMouseEnter={e => (e.target.style.color = C.text)}
+              onMouseLeave={e => (e.target.style.color = C.muted)}>
+              {l.label}
             </button>
-          </div>
+          ))}
         </div>
+
+        {/* Mobile hamburger */}
+        <button onClick={() => setMenuOpen(!menuOpen)}
+          className="mobile-menu-btn"
+          style={{ background: "none", border: "none", cursor: "pointer", color: C.text, display: "none", padding: 4 }}>
+          {menuOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
       </nav>
 
-      {/* Hero Section */}
-      <section
-        id="home"
-        className="min-h-screen flex items-center justify-center pt-32 sm:pt-20 px-6 relative"
-      >
-        <div className="max-w-4xl text-center">
-          <div className="flex justify-center mb-8 animate-scaleIn">
-            <div className="relative animate-float">
-              <div className="w-56 h-56 rounded-full border-4 border-blue-600 p-2 shadow-2xl bg-white hover:border-blue-400 transition-all duration-300 hover:shadow-blue-500/50">
-                <div className="w-full h-full rounded-full overflow-hidden bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-6xl font-bold">
-                  <img
-                    src={img}
-                    alt="Abdallah Mohamed"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
-              <div className="absolute -bottom-2 -right-2 bg-green-500 w-10 h-10 rounded-full border-4 border-white dark:border-gray-900 animate-pulse"></div>
-            </div>
-          </div>
-
-          <h1 className="text-5xl md:text-6xl font-bold mb-4 animate-fadeInUp">
-            Hello, I'm{" "}
-            <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent hover:from-blue-400 hover:to-purple-600 transition-all duration-500">
-              Abdallah Mohamed
-            </span>
-          </h1>
-          <p
-            className="text-xl md:text-2xl mb-6 text-gray-600 dark:text-gray-400 animate-fadeInUp"
-            style={{ animationDelay: "0.2s" }}
-          >
-            Computer Science Student | Full Stack Developer
-          </p>
-          <p
-            className={`text-lg mb-8 max-w-2xl mx-auto animate-fadeInUp ${
-              darkMode ? "text-gray-300" : "text-gray-600"
-            }`}
-            style={{ animationDelay: "0.4s" }}
-          >
-            Passionate about building real-world projects and continuously
-            learning new technologies using the MERN Stack
-          </p>
-
-          <div
-            className="flex gap-4 justify-center animate-fadeInUp"
-            style={{ animationDelay: "0.6s" }}
-          >
-            <button
-              onClick={() => scrollToSection("contact")}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-semibold transition-all hover:scale-110 hover:shadow-2xl hover:shadow-blue-500/50 duration-300"
-            >
-              Get In Touch
+      {/* Mobile menu dropdown */}
+      {menuOpen && (
+        <div style={{
+          position: "fixed", top: 56, left: 0, right: 0, zIndex: 99,
+          background: C.surface, borderBottom: `1px solid ${C.border}`,
+          display: "flex", flexDirection: "column",
+          padding: "12px 0",
+        }}
+        className="mobile-dropdown">
+          {navLinks.map(l => (
+            <button key={l.target} onClick={() => handleNav(l.target)}
+              style={{ color: C.text, fontSize: 15, fontWeight: 500, background: "none", border: "none", cursor: "pointer", padding: "12px 24px", textAlign: "left" }}>
+              {l.label}
             </button>
-            <button
-              onClick={() => scrollToSection("projects")}
-              className={`px-8 py-3 rounded-full font-semibold transition-all hover:scale-110 duration-300 ${
-                darkMode
-                  ? "bg-gray-800 hover:bg-gray-700 hover:shadow-2xl"
-                  : "bg-white hover:bg-gray-100 shadow-lg hover:shadow-2xl"
-              }`}
-            >
+          ))}
+        </div>
+      )}
+
+      <style>{`
+        @media (max-width: 640px) {
+          .desktop-nav { display: none !important; }
+          .mobile-menu-btn { display: block !important; }
+        }
+      `}</style>
+    </>
+  );
+}
+
+// ─── Hero ────────────────────────────────────────────────────────
+function Hero() {
+  // Replace this URL with your actual hosted image URL
+  const PHOTO_URL = "https://i.pravatar.cc/300?img=11"; // placeholder — replace with your real photo URL
+
+  return (
+    <section id="home" style={{
+      minHeight: "100vh", display: "flex", alignItems: "center",
+      padding: "120px 24px 80px", position: "relative", overflow: "hidden",
+    }}>
+      {/* Ambient decoration */}
+      <span aria-hidden style={{
+        position: "absolute", right: "6%", top: "28%",
+        fontSize: 200, fontWeight: 700, color: C.accent,
+        opacity: 0.035, fontFamily: "monospace", userSelect: "none", lineHeight: 1,
+      }}>{"{}"}</span>
+
+      <div style={{
+        maxWidth: 760, margin: "0 auto", width: "100%",
+        display: "flex", alignItems: "center", gap: 56,
+        flexWrap: "wrap",
+      }}>
+        {/* Photo */}
+        <div style={{ flexShrink: 0 }}>
+          <div style={{
+            width: 140, height: 140, borderRadius: "50%",
+            overflow: "hidden",
+            border: `2px solid ${C.border}`,
+            background: C.accentMuted,
+          }}>
+            <img
+              src={img}
+              alt="Abdallah Mohamed"
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          </div>
+        </div>
+
+        {/* Text */}
+        <div style={{ flex: 1, minWidth: 260 }}>
+          <p style={{ fontSize: 13, color: C.accent, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 16, margin: "0 0 16px" }}>
+            Backend Developer
+          </p>
+          <h1 style={{ fontSize: "clamp(36px, 5.5vw, 64px)", fontWeight: 700, color: C.text, lineHeight: 1.08, letterSpacing: "-0.03em", margin: "0 0 20px" }}>
+            Abdallah<br />Mohamed
+          </h1>
+          <p style={{ fontSize: 16, color: C.muted, lineHeight: 1.65, maxWidth: 420, margin: "0 0 36px" }}>
+            CS student at Mansoura University, building scalable APIs with Node.js, Express, and MongoDB.
+          </p>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <button onClick={() => scrollTo("projects")}
+              style={{ padding: "10px 22px", background: C.accent, color: "#fff", border: "none", borderRadius: 99, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
               View Projects
             </button>
+            <button onClick={() => scrollTo("contact")}
+              style={{ padding: "10px 22px", background: "transparent", color: C.text, border: `1.5px solid ${C.border}`, borderRadius: 99, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+              Get in Touch
+            </button>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
+  );
+}
 
-      {/* About Section */}
-      <section
-        id="about"
-        className={`py-20 px-6 ${darkMode ? "bg-gray-800" : "bg-white"}`}
-      >
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-4xl font-bold mb-8 text-center">
-            <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
-              About Me
-            </span>
-          </h2>
+// ─── About ───────────────────────────────────────────────────────
+function About() {
+  const [ref, visible] = useReveal();
+  return (
+    <section id="about" style={{ padding: "80px 24px", background: C.surface }}>
+      <Divider />
+      <div ref={ref} style={{ maxWidth: 680, margin: "60px auto 0", ...revealStyle(visible) }}>
+        <p style={{ fontSize: 11, color: C.accent, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 16 }}>About</p>
+        <h2 style={{ fontSize: "clamp(24px, 3.5vw, 36px)", fontWeight: 700, color: C.text, letterSpacing: "-0.02em", margin: "0 0 24px", lineHeight: 1.2 }}>
+          Building toward a backend internship through real projects.
+        </h2>
+        <p style={{ fontSize: 16, color: C.muted, lineHeight: 1.7, margin: "0 0 16px" }}>
+          Second-year CS student at Mansoura University (Faculty of Computer & Information Sciences), with a backend-first focus. Completed both a Frontend/React Diploma and a Node.js Backend Diploma through Route Academy.
+        </p>
+        <p style={{ fontSize: 16, color: C.muted, lineHeight: 1.7 }}>
+          I build in public — documenting the journey on YouTube and Instagram under{" "}
+          <span style={{ color: C.text, fontWeight: 500 }}>Big-Abdallah</span>.
+        </p>
+      </div>
+    </section>
+  );
+}
 
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            <div>
-              <div
-                className={`p-6 rounded-2xl hover:scale-105 transition-all duration-300 ${
-                  darkMode ? "bg-gray-900" : "bg-gray-50"
-                }`}
-              >
-                <GraduationCap className="w-12 h-12 text-blue-600 mb-4" />
-                <h3 className="text-2xl font-bold mb-2">Education</h3>
-                <p className={darkMode ? "text-gray-300" : "text-gray-600"}>
-                  Bachelor of Computer Science
-                  <br />
-                  <span className="text-blue-600">Mansoura University</span>
-                  <br />
-                  May 2024
-                </p>
+// ─── Skills ──────────────────────────────────────────────────────
+function Skills() {
+  const [ref, visible] = useReveal();
+  return (
+    <section id="skills" style={{ padding: "80px 24px", background: C.bg }}>
+      <Divider />
+      <div ref={ref} style={{ maxWidth: 680, margin: "60px auto 0", ...revealStyle(visible) }}>
+        <p style={{ fontSize: 11, color: C.accent, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 40 }}>Tech Stack</p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 32 }}>
+          {Object.entries(skills).map(([cat, list]) => (
+            <div key={cat}>
+              <p style={{ fontSize: 12, color: C.muted, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 12, margin: "0 0 12px" }}>{cat}</p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                {list.map(s => <Tag key={s} label={s} accent={cat === "Backend"} />)}
               </div>
             </div>
-
-            <div
-              className={`p-6 rounded-2xl hover:scale-105 transition-all duration-300 ${
-                darkMode ? "bg-gray-900" : "bg-gray-50"
-              }`}
-            >
-              <Code className="w-12 h-12 text-blue-600 mb-4" />
-              <h3 className="text-2xl font-bold mb-4">Current Focus</h3>
-              <p
-                className={`${
-                  darkMode ? "text-gray-300" : "text-gray-600"
-                } leading-relaxed`}
-              >
-                Currently enhancing my Backend Development skills with Node.js,
-                Express, and MongoDB, while building full-stack applications
-                using the MERN stack. Always learning and exploring new
-                technologies.
-              </p>
-            </div>
-          </div>
+          ))}
         </div>
-      </section>
+      </div>
+    </section>
+  );
+}
 
-      {/* Skills Section */}
-      <section id="skills" className="py-20 px-6">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold mb-12 text-center">
-            <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
-              Tech Stack
-            </span>
-          </h2>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div
-              className={`p-6 rounded-2xl ${
-                darkMode ? "bg-gray-800" : "bg-white"
-              } shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300`}
-            >
-              <h3 className="text-xl font-bold mb-4 text-blue-600">
-                Languages
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {skills.languages.map((skill) => (
-                  <span
-                    key={skill}
-                    className={`px-3 py-1 rounded-full text-sm hover:scale-110 transition-transform ${
-                      darkMode ? "bg-gray-900" : "bg-gray-100"
-                    }`}
-                  >
-                    {skill}
-                  </span>
-                ))}
+// ─── Experience ──────────────────────────────────────────────────
+function Experience() {
+  const [ref, visible] = useReveal();
+  return (
+    <section id="experience" style={{ padding: "80px 24px", background: C.surface }}>
+      <Divider />
+      <div ref={ref} style={{ maxWidth: 680, margin: "60px auto 0", ...revealStyle(visible) }}>
+        <p style={{ fontSize: 11, color: C.accent, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 40 }}>Experience</p>
+        {experience.map((e, i) => (
+          <div key={i}>
+            <div style={{ padding: "24px 0", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap" }}>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+                  <p style={{ fontSize: 16, fontWeight: 600, color: C.text, margin: 0 }}>{e.role}</p>
+                  {e.current && (
+                    <span style={{ fontSize: 11, fontWeight: 600, color: C.accent, background: C.accentMuted, padding: "2px 8px", borderRadius: 99 }}>
+                      Current
+                    </span>
+                  )}
+                </div>
+                <p style={{ fontSize: 14, color: C.accent, margin: "0 0 8px" }}>{e.org}</p>
+                <p style={{ fontSize: 14, color: C.muted, margin: 0, lineHeight: 1.6 }}>{e.desc}</p>
               </div>
+              <p style={{ fontSize: 13, color: C.muted, whiteSpace: "nowrap", margin: 0 }}>{e.period}</p>
             </div>
-
-            <div
-              className={`p-6 rounded-2xl ${
-                darkMode ? "bg-gray-800" : "bg-white"
-              } shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300`}
-            >
-              <h3 className="text-xl font-bold mb-4 text-blue-600">Frontend</h3>
-              <div className="flex flex-wrap gap-2">
-                {skills.frontend.map((skill) => (
-                  <span
-                    key={skill}
-                    className={`px-3 py-1 rounded-full text-sm hover:scale-110 transition-transform ${
-                      darkMode ? "bg-gray-900" : "bg-gray-100"
-                    }`}
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div
-              className={`p-6 rounded-2xl ${
-                darkMode ? "bg-gray-800" : "bg-white"
-              } shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300`}
-            >
-              <h3 className="text-xl font-bold mb-4 text-blue-600">Backend</h3>
-              <div className="flex flex-wrap gap-2">
-                {skills.backend.map((skill) => (
-                  <span
-                    key={skill}
-                    className={`px-3 py-1 rounded-full text-sm hover:scale-110 transition-transform ${
-                      darkMode ? "bg-gray-900" : "bg-gray-100"
-                    }`}
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div
-              className={`p-6 rounded-2xl ${
-                darkMode ? "bg-gray-800" : "bg-white"
-              } shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300`}
-            >
-              <h3 className="text-xl font-bold mb-4 text-blue-600">Tools</h3>
-              <div className="flex flex-wrap gap-2">
-                {skills.tools.map((skill) => (
-                  <span
-                    key={skill}
-                    className={`px-3 py-1 rounded-full text-sm hover:scale-110 transition-transform ${
-                      darkMode ? "bg-gray-900" : "bg-gray-100"
-                    }`}
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
+            {i < experience.length - 1 && <Divider />}
           </div>
-        </div>
-      </section>
+        ))}
+      </div>
+    </section>
+  );
+}
 
-      {/* Experience Section */}
-      <section
-        id="experience"
-        className={`py-20 px-6 ${darkMode ? "bg-gray-800" : "bg-white"}`}
-      >
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-4xl font-bold mb-12 text-center">
-            <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
-              Experience
-            </span>
-          </h2>
-
-          <div className="space-y-6">
-            {experience.map((exp, index) => (
-              <div
-                key={index}
-                className={`p-6 rounded-2xl hover:scale-105 hover:shadow-2xl transition-all duration-300 ${
-                  darkMode ? "bg-gray-900" : "bg-gray-50"
-                }`}
-              >
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-blue-600 rounded-lg">
-                    <Briefcase className="w-6 h-6 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <h3 className="text-xl font-bold">{exp.title}</h3>
-                        <p className="text-blue-600">{exp.company}</p>
-                      </div>
-                      {exp.current && (
-                        <span className="px-3 py-1 bg-green-500 text-white text-sm rounded-full animate-pulse">
-                          حالياً
-                        </span>
-                      )}
-                    </div>
-                    <p
-                      className={`text-sm mb-2 ${
-                        darkMode ? "text-gray-400" : "text-gray-600"
-                      }`}
-                    >
-                      {exp.period}
-                    </p>
-                    <p className={darkMode ? "text-gray-300" : "text-gray-700"}>
-                      {exp.description}
-                    </p>
-                  </div>
+// ─── Projects ────────────────────────────────────────────────────
+function Projects() {
+  const [ref, visible] = useReveal();
+  return (
+    <section id="projects" style={{ padding: "80px 24px", background: C.bg }}>
+      <Divider />
+      <div ref={ref} style={{ maxWidth: 680, margin: "60px auto 0", ...revealStyle(visible) }}>
+        <p style={{ fontSize: 11, color: C.accent, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 40 }}>Projects</p>
+        {projects.map((p, i) => (
+          <div key={i}>
+            <div style={{ padding: "28px 0" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8, flexWrap: "wrap", gap: 8 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <h3 style={{ fontSize: 17, fontWeight: 700, color: C.text, margin: 0 }}>{p.name}</h3>
+                  <Tag label={p.type} />
+                </div>
+                <div style={{ display: "flex", gap: 16 }}>
+                  {p.github && p.github !== "#" && (
+                    <a href={p.github} target="_blank" rel="noreferrer"
+                      style={{ color: C.muted, display: "flex", alignItems: "center", gap: 4, fontSize: 13, textDecoration: "none", fontWeight: 500 }}>
+                      <Github size={13} /> Code
+                    </a>
+                  )}
+                  {p.demo && p.demo !== "#" && (
+                    <a href={p.demo} target="_blank" rel="noreferrer"
+                      style={{ color: C.accent, display: "flex", alignItems: "center", gap: 4, fontSize: 13, textDecoration: "none", fontWeight: 500 }}>
+                      <ExternalLink size={13} /> Demo
+                    </a>
+                  )}
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Projects Section */}
-      <section id="projects" className="py-20 px-6">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold mb-12 text-center">
-            <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
-              Featured Projects
-            </span>
-          </h2>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {projects.map((project, index) => (
-              <div
-                key={index}
-                className={`rounded-2xl overflow-hidden ${
-                  darkMode ? "bg-gray-800" : "bg-white"
-                } shadow-lg hover:shadow-2xl transition-all hover:-translate-y-2 duration-300`}
-              >
-                <div className="p-6">
-                  <h3 className="text-2xl font-bold mb-3">{project.title}</h3>
-                  <p
-                    className={`mb-4 ${
-                      darkMode ? "text-gray-300" : "text-gray-600"
-                    }`}
-                  >
-                    {project.description}
-                  </p>
-
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {project.tech.map((tech) => (
-                      <span
-                        key={tech}
-                        className="px-3 py-1 bg-blue-600 text-white text-sm rounded-full hover:scale-110 transition-transform"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="flex gap-3">
-                    <a
-                      href={project.github}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all hover:scale-105 ${
-                        darkMode
-                          ? "bg-gray-900 hover:bg-gray-700"
-                          : "bg-gray-100 hover:bg-gray-200"
-                      }`}
-                    >
-                      <Github className="w-4 h-4" />
-                      <span className="text-sm">Code</span>
-                    </a>
-                    <a
-                      href={project.demo}
-                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all hover:scale-105"
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                      <span className="text-sm">Demo</span>
-                    </a>
-                  </div>
-                </div>
+              <p style={{ fontSize: 14, color: C.muted, lineHeight: 1.65, margin: "0 0 12px" }}>{p.description}</p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {p.tech.map(t => <Tag key={t} label={t} />)}
               </div>
-            ))}
+            </div>
+            {i < projects.length - 1 && <Divider />}
           </div>
-        </div>
-      </section>
+        ))}
+      </div>
+    </section>
+  );
+}
 
-      {/* Contact Section */}
-      <section
-        id="contact"
-        className={`py-20 px-6 ${darkMode ? "bg-gray-800" : "bg-white"}`}
-      >
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
-              Let's Connect
-            </span>
-          </h2>
-          <p
-            className={`text-lg mb-12 ${
-              darkMode ? "text-gray-300" : "text-gray-600"
-            }`}
-          >
-            I'm open to opportunities in Backend or Frontend Development. Let's
-            build something amazing together!
-          </p>
-
-          <div className="flex gap-6 justify-center">
-            <a
-              href="https://github.com/MrLazyC0der"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`p-4 rounded-full transition-all hover:scale-125 hover:rotate-12 duration-300 ${
-                darkMode
-                  ? "bg-gray-900 hover:bg-gray-700"
-                  : "bg-gray-100 hover:bg-gray-200"
-              }`}
-            >
-              <Github className="w-8 h-8" />
+// ─── Contact ─────────────────────────────────────────────────────
+function Contact() {
+  const [ref, visible] = useReveal();
+  const links = [
+    { icon: <Mail size={15} />, label: "swe.abdallah.m@icloud.com", href: "mailto:swe.abdallah.m@icloud.com" },
+    { icon: <Linkedin size={15} />, label: "LinkedIn", href: "https://www.linkedin.com/in/engabdallahmohamed/" },
+    { icon: <Github size={15} />, label: "GitHub", href: "https://github.com/MrLazyC0der" },
+  ];
+  return (
+    <section id="contact" style={{ padding: "80px 24px 100px", background: C.surface }}>
+      <Divider />
+      <div ref={ref} style={{ maxWidth: 680, margin: "60px auto 0", ...revealStyle(visible) }}>
+        <p style={{ fontSize: 11, color: C.accent, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 16 }}>Contact</p>
+        <h2 style={{ fontSize: "clamp(24px, 3.5vw, 36px)", fontWeight: 700, color: C.text, letterSpacing: "-0.02em", margin: "0 0 40px", lineHeight: 1.2 }}>
+          Open to backend internship<br />and junior opportunities.
+        </h2>
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+          {links.map(({ icon, label, href }) => (
+            <a key={label} href={href} target="_blank" rel="noreferrer"
+              style={{
+                display: "flex", alignItems: "center", gap: 8,
+                padding: "10px 18px", border: `1.5px solid ${C.border}`,
+                borderRadius: 99, fontSize: 13, fontWeight: 500, color: C.text,
+                textDecoration: "none", background: C.bg, transition: "border-color 0.2s",
+              }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = C.accent)}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = C.border)}>
+              {icon} {label} <ArrowUpRight size={11} color={C.muted} />
             </a>
-            <a
-              href="https://www.linkedin.com/in/engabdallahmohamed/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`p-4 rounded-full transition-all hover:scale-125 hover:rotate-12 duration-300 ${
-                darkMode
-                  ? "bg-gray-900 hover:bg-gray-700"
-                  : "bg-gray-100 hover:bg-gray-200"
-              }`}
-            >
-              <Linkedin className="w-8 h-8 text-blue-600" />
-            </a>
-            <a
-              href="mailto:engabdallahmo@icloud.com"
-              className={`p-4 rounded-full transition-all hover:scale-125 hover:rotate-12 duration-300 ${
-                darkMode
-                  ? "bg-gray-900 hover:bg-gray-700"
-                  : "bg-gray-100 hover:bg-gray-200"
-              }`}
-            >
-              <Mail className="w-8 h-8 text-red-500" />
-            </a>
-          </div>
+          ))}
         </div>
-      </section>
+      </div>
+    </section>
+  );
+}
 
-      {/* Footer */}
-      <footer
-        className={`py-8 px-6 border-t ${
-          darkMode ? "border-gray-800 bg-gray-900" : "border-gray-200"
-        }`}
-      >
-        <div className="max-w-6xl mx-auto text-center">
-          <p className={darkMode ? "text-gray-400" : "text-gray-600"}>
-            © 2025 Abdallah Mohamed. Built with React & Tailwind CSS
-          </p>
-        </div>
-      </footer>
+// ─── App ─────────────────────────────────────────────────────────
+export default function Portfolio() {
+  return (
+    <div style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", background: C.bg, color: C.text, minHeight: "100vh" }}>
+      <Nav />
+      <Hero />
+      <About />
+      <Skills />
+      <Experience />
+      <Projects />
+      <Contact />
+      <div style={{ borderTop: `1px solid ${C.border}`, padding: "24px", textAlign: "center" }}>
+        <p style={{ fontSize: 12, color: C.muted, margin: 0 }}>© 2025 Abdallah Mohamed · Built with React</p>
+      </div>
     </div>
   );
 }
