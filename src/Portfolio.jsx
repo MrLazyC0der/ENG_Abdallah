@@ -17,7 +17,8 @@ import {
   Moon,
   Languages,
 } from "lucide-react";
-
+import photo from "./assets/photo.jpg";
+import certificate from "./assets/certificate.jpeg";
 /* ------------------------------------------------------------------ */
 /*  Theme + Language context                                           */
 /* ------------------------------------------------------------------ */
@@ -222,7 +223,7 @@ function Reveal({ children, delay = 0, className = "" }) {
 
 // Place route-certificate.jpg inside your project's /public folder (Vite/CRA)
 // so this path resolves. Swap the string for a hosted URL if you prefer.
-const CERTIFICATE_IMAGE = "/src/assets/certificate.jpeg";
+
 
 function getNavLinks(t) {
   return [
@@ -498,7 +499,7 @@ function Hero() {
 
       <Card className={"relative flex flex-col items-center gap-10 px-6 py-14 text-center md:flex-row md:items-center md:px-16 md:py-20 " + mdTextAlign}>
         <div className={"flex h-32 w-32 shrink-0 items-center justify-center rounded-full border font-mono text-3xl font-semibold md:h-40 md:w-40 " + c.border + " " + c.surfaceAlt + " " + c.text}>
-          <img src="/src/assets/photo.jpg" className="h-32 w-32 rounded-full object-cover ..." />
+          <img src={photo} alt="Profile" className="h-32 w-32 rounded-full object-cover ..." />
         </div>
 
         <div className="flex flex-col items-center md:items-start">
@@ -617,7 +618,7 @@ function CertificateFrame() {
 
   return (
     <a
-      href={CERTIFICATE_IMAGE}
+      href={certificate}
       target="_blank"
       rel="noreferrer"
       className="group block"
@@ -626,7 +627,7 @@ function CertificateFrame() {
       <div className={"rounded-2xl border p-3 transition-colors duration-300 " + c.border + " " + c.surfaceAlt}>
         <div className={"overflow-hidden rounded-xl border " + c.border}>
           <img
-            src={CERTIFICATE_IMAGE}
+            src={certificate}
             alt={t.certificate.caption + " — " + t.certificate.issuer}
             className="aspect-[16/11] w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
