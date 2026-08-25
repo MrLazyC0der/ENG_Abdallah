@@ -1,434 +1,901 @@
-import { useState, useEffect, useRef } from "react";
-import { Github, Linkedin, Mail, ExternalLink, ArrowUpRight, Menu, X } from "lucide-react";
-import img from "./assets/photo_2025-12-17_14-26-21.jpg";
-// ─── Design tokens ───────────────────────────────────────────────
-const C = {
-  bg: "#F5F5F0",
-  surface: "#FFFFFF",
-  accent: "#0A84FF",
-  accentMuted: "#E8F2FF",
-  text: "#1A1A1A",
-  muted: "#6B6B6B",
-  border: "#E5E5E5",
+import React, { useState, useEffect, useRef, useContext, createContext } from "react";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Linkedin,
+  Github,
+  ArrowRight,
+  ArrowUpRight,
+  Menu,
+  X,
+  Server,
+  Layout as LayoutIcon,
+  Database,
+  Wrench,
+  Sun,
+  Moon,
+  Languages,
+} from "lucide-react";
+
+/* ------------------------------------------------------------------ */
+/*  Theme + Language context                                           */
+/* ------------------------------------------------------------------ */
+
+const ThemeContext = createContext(null);
+const useTheme = () => useContext(ThemeContext);
+
+const LangContext = createContext(null);
+const useLang = () => useContext(LangContext);
+
+function getColors(dark) {
+  return dark
+    ? {
+        bg: "bg-stone-950",
+        surface: "bg-stone-900",
+        surfaceAlt: "bg-stone-800",
+        border: "border-stone-800",
+        text: "text-stone-50",
+        textMuted: "text-stone-400",
+        textFaint: "text-stone-500",
+        emphasisBorder: "border-amber-400",
+        emphasisAccent: "text-amber-400",
+        chip: "border-stone-700 bg-stone-800 text-stone-300 hover:border-amber-400",
+        chipEmphasis: "border-stone-700 bg-stone-800 text-stone-300 hover:border-amber-400",
+        navBg: "bg-stone-900/90",
+        hover: "hover:bg-stone-800",
+        dot: "bg-amber-400",
+        dotMuted: "bg-stone-500",
+        primaryBtn: "bg-amber-400 text-stone-950",
+        ghostBtn: "border-stone-700 bg-stone-900 text-stone-50 hover:bg-stone-800",
+        iconRing: "bg-amber-400 text-stone-950",
+      }
+    : {
+        bg: "bg-stone-100",
+        surface: "bg-white",
+        surfaceAlt: "bg-stone-50",
+        border: "border-stone-200",
+        text: "text-stone-900",
+        textMuted: "text-stone-600",
+        textFaint: "text-stone-500",
+        emphasisBorder: "border-stone-900",
+        emphasisAccent: "text-stone-900",
+        chip: "border-stone-200 bg-stone-50 text-stone-900 hover:border-stone-900",
+        chipEmphasis: "border-stone-200 bg-stone-50 text-stone-900 hover:border-stone-900",
+        navBg: "bg-white/90",
+        hover: "hover:bg-stone-100",
+        dot: "bg-stone-900",
+        dotMuted: "bg-stone-400",
+        primaryBtn: "bg-stone-900 text-white",
+        ghostBtn: "border-stone-200 bg-white text-stone-900 hover:bg-stone-100",
+        iconRing: "bg-stone-900 text-white",
+      };
+}
+
+/* ------------------------------------------------------------------ */
+/*  Translations                                                       */
+/* ------------------------------------------------------------------ */
+
+const TRANSLATIONS = {
+  en: {
+    dir: "ltr",
+    brand: "A. Mohamed",
+    nav: { about: "About", skills: "Skills", training: "Training", projects: "Projects", contact: "Contact", contactBtn: "Contact Me" },
+    hero: {
+      eyebrow: "Full Stack Developer · Backend-focused (Node.js)",
+      name: "Abdallah Mohamed",
+      description:
+        "Backend-focused Full Stack Developer and Computer Science student passionate about building scalable APIs and modern web applications using Node.js, Express, MongoDB, and React.",
+      viewProjects: "View Projects",
+      contactMe: "Contact Me",
+    },
+    about: {
+      eyebrow: "Who I am",
+      heading: "About",
+      p1: "Computer Science student at FCIS, Mansoura University, specializing in backend development with Node.js and Express.",
+      p2: "Completed a 300-hour Full Stack Web Development diploma at Route Academy covering both frontend and backend technologies.",
+      p3: "Passionate about building scalable APIs, authentication systems, and modern web applications.",
+    },
+    skillsSection: { eyebrow: "What I work with", heading: "Technical Skills" },
+    skillCategories: { backend: "Backend", frontend: "Frontend", databases: "Databases", tools: "Tools" },
+    training: {
+      eyebrow: "Route Academy",
+      heading: "Training & Certifications",
+      subtitle: "Full Stack Web Development — 300 Hours",
+    },
+    trainingStages: { frontend: "Frontend Stage", backend: "Backend Stage" },
+    certificate: { caption: "Full Stack Web Development Diploma", issuer: "Route Academy", view: "View full certificate" },
+    projectsSection: { eyebrow: "Case studies", heading: "Projects", viewGithub: "View on GitHub" },
+    projectTypes: { backend: "Backend", fullstack: "Full Stack", frontend: "Frontend" },
+    projectDescriptions: {
+  sara7a: "Anonymous messaging platform featuring JWT authentication, Redis session management, role-based authorization, and email notifications.",
+  social: "Modern social media platform with authentication, posts, comments, likes, and real-time interactions.",
+  ecommerce: "E-commerce application with authentication, product management, cart, orders, and payment integration.",
+  noteApp: "SPA for managing notes with register/login, JWT authentication, and full create, edit, and delete flows, built with React Router, Hero UI components, and React Hook Form + Zod validation.",
+  weather: "Weather dashboard with city search, live conditions (temperature, feels-like, humidity, wind, pressure, visibility), a 5-day forecast with icons, and dark mode, powered by the free wttr.in API.",
+},
+    contactSection: { eyebrow: "Let's build something", heading: "Get in Touch" },
+    contactLabels: { email: "Email", phone: "Phone", location: "Location", linkedin: "LinkedIn", github: "GitHub" },
+    locationValue: "Dakahlia, Egypt",
+    footer: {
+      role: "Full Stack Developer — Backend-focused with Node.js",
+      copyright: "© 2026 Abdallah Mohamed — Built with React + Tailwind CSS",
+    },
+    toggleLangLabel: "العربية",
+  },
+  ar: {
+    dir: "rtl",
+    brand: "ع. محمد",
+    nav: { about: "نبذة عني", skills: "المهارات", training: "التدريب", projects: "المشاريع", contact: "تواصل", contactBtn: "تواصل معي" },
+    hero: {
+      eyebrow: "مطور فل ستاك · متخصص في الباك اند (Node.js)",
+      name: "عبدالله محمد",
+      description:
+        "مطور فل ستاك متخصص في الباك اند وطالب علوم حاسب، شغوف ببناء واجهات برمجية قابلة للتوسع وتطبيقات ويب حديثة باستخدام Node.js وExpress وMongoDB وReact.",
+      viewProjects: "عرض المشاريع",
+      contactMe: "تواصل معي",
+    },
+    about: {
+      eyebrow: "من أنا",
+      heading: "نبذة عني",
+      p1: "طالب علوم حاسب بكلية الحاسبات والمعلومات، جامعة المنصورة، متخصص في تطوير الباك اند باستخدام Node.js وExpress.",
+      p2: "أكملت دبلومة تطوير الويب المتكامل لمدة 300 ساعة في أكاديمية روت، تغطي تقنيات الفرونت اند والباك اند.",
+      p3: "شغوف ببناء واجهات برمجية قابلة للتوسع وأنظمة مصادقة وتطبيقات ويب حديثة.",
+    },
+    skillsSection: { eyebrow: "أدوات العمل", heading: "المهارات التقنية" },
+    skillCategories: { backend: "الباك اند", frontend: "الفرونت اند", databases: "قواعد البيانات", tools: "الأدوات" },
+    training: {
+      eyebrow: "أكاديمية روت",
+      heading: "التدريب والشهادات",
+      subtitle: "تطوير الويب المتكامل — 300 ساعة",
+    },
+    trainingStages: { frontend: "مرحلة الفرونت اند", backend: "مرحلة الباك اند" },
+    certificate: { caption: "دبلومة تطوير الويب المتكامل", issuer: "أكاديمية روت", view: "عرض الشهادة كاملة" },
+    projectsSection: { eyebrow: "دراسات حالة", heading: "المشاريع", viewGithub: "عرض على جيت هاب" },
+    projectTypes: { backend: "باك اند", fullstack: "فل ستاك", frontend: "فرونت اند" },
+    projectDescriptions: {
+  sara7a: "منصة مراسلة مجهولة الهوية تتضمن مصادقة JWT، وإدارة جلسات عبر Redis، وصلاحيات حسب الأدوار، وإشعارات بريد إلكتروني.",
+  social: "منصة تواصل اجتماعي حديثة تتضمن مصادقة، ومنشورات، وتعليقات، وإعجابات، وتفاعلات لحظية.",
+  ecommerce: "تطبيق تجارة إلكترونية يتضمن مصادقة، وإدارة منتجات، وسلة شراء، وطلبات، وربط بوسائل الدفع.",
+  noteApp: "تطبيق SPA لإدارة الملاحظات فيه تسجيل حساب وتسجيل دخول بمصادقة JWT، وعمليات إضافة وتعديل وحذف كاملة، مبني بـ React Router ومكونات Hero UI، مع فاليديشن عبر React Hook Form وZod.",
+  weather: "لوحة تحكم للطقس فيها بحث عن أي مدينة، وعرض الحالة الحالية (الحرارة، الإحساس بالحرارة، الرطوبة، الرياح، الضغط، الرؤية)، وتوقعات 5 أيام بأيقونات، ودعم الوضع الليلي، باستخدام API مجاني من wttr.in.",
+},
+    contactSection: { eyebrow: "لنبني شيئًا معًا", heading: "تواصل معي" },
+    contactLabels: { email: "البريد الإلكتروني", phone: "الهاتف", location: "الموقع", linkedin: "لينكدإن", github: "جيت هاب" },
+    locationValue: "الدقهلية، مصر",
+    footer: {
+      role: "مطور فل ستاك — متخصص في الباك اند باستخدام Node.js",
+      copyright: "© 2026 عبدالله محمد — تم البناء باستخدام React + Tailwind CSS",
+    },
+    toggleLangLabel: "English",
+  },
 };
 
-// ─── Data ────────────────────────────────────────────────────────
-const skills = {
-  Backend:   ["Node.js", "Express.js", "MongoDB", "Redis", "JWT Auth"],
-  Frontend:  ["React.js", "Tailwind CSS", "Bootstrap", "HTML", "CSS"],
-  Languages: ["JavaScript", "TypeScript", "C++", "Python"],
-  Tools:     ["Git", "GitHub", "Postman", "Docker", "Vercel", "VS Code"],
-};
+/* ------------------------------------------------------------------ */
+/*  Scroll reveal hook + wrapper                                       */
+/* ------------------------------------------------------------------ */
 
-const projects = [
-  {
-    name: "Sara7a",
-    type: "Backend",
-    description:
-      "Anonymous messaging platform with dual-token JWT authentication, Redis-based session management, role-based access control, and event-driven email notifications.",
-    tech: ["Node.js", "Express", "MongoDB", "Redis", "JWT"],
-    github: "#",
-    demo: null,
-  },
-  {
-    name: "Note App",
-    type: "Frontend",
-    description:
-      "Task and note management app built with React, focused on clean component architecture and state management.",
-    tech: ["React", "JavaScript", "CSS"],
-    github: "#",
-    demo: "#",
-  },
-  {
-    name: "Weather Dashboard",
-    type: "Frontend",
-    description:
-      "Responsive weather dashboard with REST API integration and dynamic UI updates.",
-    tech: ["React", "Tailwind CSS", "API"],
-    github: "https://github.com/MrLazyC0der/Weather_Dashboard",
-    demo: "https://weather-dashboard-nine-ochre.vercel.app/",
-  },
-];
-
-const experience = [
-  {
-    role: "Backend Developer",
-    org: "Route Academy",
-    period: "Nov 2024 – Present",
-    current: true,
-    desc: "Node.js Diploma — building production-grade APIs with Express, MongoDB, and Redis.",
-  },
-  {
-    role: "Frontend Developer",
-    org: "Route Academy",
-    period: "Feb 2024 – Oct 2024",
-    current: false,
-    desc: "Frontend Diploma — building UI with React and Tailwind CSS.",
-  },
-];
-
-// ─── Scroll reveal hook ──────────────────────────────────────────
-function useReveal() {
+function useInView(threshold = 0.15) {
   const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
+  const [inView, setInView] = useState(false);
+
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect(); } },
-      { threshold: 0.12 }
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          observer.unobserve(el);
+        }
+      },
+      { threshold }
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
-  return [ref, visible];
+  }, [threshold]);
+
+  return [ref, inView];
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────
-const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-
-const revealStyle = (visible, delay = 0) => ({
-  opacity: visible ? 1 : 0,
-  transform: visible ? "translateY(0)" : "translateY(24px)",
-  transition: `opacity 0.6s ease ${delay}s, transform 0.6s ease ${delay}s`,
-});
-
-// ─── Sub-components ──────────────────────────────────────────────
-function Tag({ label, accent }) {
+function Reveal({ children, delay = 0, className = "" }) {
+  const [ref, inView] = useInView();
   return (
-    <span style={{
-      display: "inline-block", padding: "3px 10px", borderRadius: 99,
-      fontSize: 12, fontWeight: 500,
-      background: accent ? C.accentMuted : "#F0F0EC",
-      color: accent ? C.accent : C.muted,
-      letterSpacing: "0.01em",
-    }}>
-      {label}
-    </span>
+    <div
+      ref={ref}
+      className={
+        "transition-all duration-700 ease-out " +
+        (inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6") +
+        " " +
+        className
+      }
+      style={{ transitionDelay: inView ? `${delay}ms` : "0ms" }}
+    >
+      {children}
+    </div>
   );
 }
 
-function Divider() {
-  return <div style={{ borderTop: `1px solid ${C.border}` }} />;
+/* ------------------------------------------------------------------ */
+/*  Data (localized via translation object)                            */
+/* ------------------------------------------------------------------ */
+
+// Place route-certificate.jpg inside your project's /public folder (Vite/CRA)
+// so this path resolves. Swap the string for a hosted URL if you prefer.
+const CERTIFICATE_IMAGE = "/src/assets/certificate.jpeg";
+
+function getNavLinks(t) {
+  return [
+    { label: t.nav.about, href: "#about" },
+    { label: t.nav.skills, href: "#skills" },
+    { label: t.nav.training, href: "#training" },
+    { label: t.nav.projects, href: "#projects" },
+    { label: t.nav.contact, href: "#contact" },
+  ];
 }
 
-// ─── Nav ─────────────────────────────────────────────────────────
-function Nav() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const navLinks = [
-    { label: "About", target: "about" },
-    { label: "Skills", target: "skills" },
-    { label: "Experience", target: "experience" },
-    { label: "Projects", target: "projects" },
-    { label: "Contact", target: "contact" },
+function getContactInfo(t) {
+  return [
+    { icon: Mail, label: t.contactLabels.email, value: "swe.abdallah.m@icloud.com", href: "mailto:swe.abdallah.m@icloud.com" },
+    { icon: Phone, label: t.contactLabels.phone, value: "01090768249", href: "tel:01090768249" },
+    { icon: MapPin, label: t.contactLabels.location, value: t.locationValue, href: null },
+    { icon: Linkedin, label: t.contactLabels.linkedin, value: "engabdallahmohamed", href: "https://www.linkedin.com/in/engabdallahmohamed/" },
+    { icon: Github, label: t.contactLabels.github, value: "Big-Abdallah", href: "https://github.com/Big-Abdallah" },
   ];
+}
 
-  const handleNav = (target) => {
-    scrollTo(target);
-    setMenuOpen(false);
-  };
+function getSkills(t) {
+  return [
+    {
+      category: t.skillCategories.backend,
+      icon: Server,
+      emphasis: true,
+      items: ["Node.js", "Express.js", "MVC", "Middleware", "REST APIs", "JWT Authentication", "Authorization", "Joi Validation", "Socket.IO"],
+    },
+    {
+      category: t.skillCategories.frontend,
+      icon: LayoutIcon,
+      emphasis: false,
+      items: ["HTML5", "CSS3", "Bootstrap", "Tailwind CSS", "JavaScript ES6+", "TypeScript", "React.js", "Hooks", "Context API", "React Router", "Redux Toolkit", "React Query", "Axios", "Fetch API"],
+    },
+    {
+      category: t.skillCategories.databases,
+      icon: Database,
+      emphasis: false,
+      items: ["MongoDB", "Mongoose ODM", "MySQL", "Sequelize ORM"],
+    },
+    {
+      category: t.skillCategories.tools,
+      icon: Wrench,
+      emphasis: false,
+      items: ["Git", "GitHub", "Docker (Intro)", "Deployment", "Postman", "API Documentation", "VS Code"],
+    },
+  ];
+}
+
+function getTrainingStages(t) {
+  return [
+    { stage: t.trainingStages.frontend, range: "Feb 2025 — Oct 2025", emphasis: false },
+    { stage: t.trainingStages.backend, range: "Nov 2025 — Aug 2026", emphasis: true },
+  ];
+}
+
+function getProjects(t) {
+  return [
+    {
+      title: "Sara7a",
+      type: t.projectTypes.backend,
+      description: t.projectDescriptions.sara7a,
+      tags: ["Node.js", "Express.js", "MongoDB", "Redis", "JWT"],
+      githubUrl: "https://github.com/Big-Abdallah/sara7a-App/blob/main/README.md",
+    },
+    {
+      title: "Social Media Platform",
+      type: t.projectTypes.backend,
+      description: t.projectDescriptions.social,
+      tags: ["React", "Node.js", "Express", "MongoDB", "Socket.IO"],
+      githubUrl: "https://github.com/Big-Abdallah",
+    },
+    {
+      title: "E-Commerce Platform",
+      type: t.projectTypes.backend,
+      description: t.projectDescriptions.ecommerce,
+      tags: ["React", "Node.js", "Express", "MongoDB", "JWT"],
+      githubUrl: "https://github.com/Big-Abdallah",
+    },
+           {
+      title: "Note App",
+      type: t.projectTypes.frontend,
+      description: t.projectDescriptions.noteApp,
+      tags: ["React", "Tailwind CSS", "React Hook Form", "Zod", "JWT"],
+      githubUrl: "https://github.com/Big-Abdallah/AppNote",
+      demoUrl: "https://app-note-nu.vercel.app/",
+    },
+    {
+      title: "Weather Dashboard",
+      type: t.projectTypes.frontend,
+      description: t.projectDescriptions.weather,
+      tags: ["React", "Tailwind CSS", "wttr.in API"],
+      githubUrl: "https://github.com/MrLazyC0der/Weather_Dashboard",
+      demoUrl: "https://weather-dashboard-nine-ochre.vercel.app/",
+    },
+  ];
+}
+/* ------------------------------------------------------------------ */
+/*  Small building blocks                                              */
+/* ------------------------------------------------------------------ */
+
+function Eyebrow({ children }) {
+  const c = getColors(useTheme().dark);
+  return <span className={"font-mono text-xs uppercase tracking-widest " + c.textFaint}>{children}</span>;
+}
+
+function Card({ className = "", children }) {
+  const c = getColors(useTheme().dark);
+  return (
+    <div
+      className={
+        "rounded-3xl border transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg " +
+        c.border +
+        " " +
+        c.surface +
+        " " +
+        className
+      }
+    >
+      {children}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Navbar                                                             */
+/* ------------------------------------------------------------------ */
+
+function Navbar() {
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const { dark, toggleDark } = useTheme();
+  const { lang, dir, t, toggleLang } = useLang();
+  const c = getColors(dark);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const navLinks = getNavLinks(t);
 
   return (
-    <>
-      <nav style={{
-        position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-        background: "rgba(245,245,240,0.88)",
-        backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)",
-        borderBottom: `1px solid ${C.border}`,
-        padding: "0 24px", height: 56,
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-      }}>
-        <span style={{ fontSize: 15, fontWeight: 700, color: C.text, letterSpacing: "-0.01em" }}>
-          Abdallah<span style={{ color: C.accent }}>.</span>
-        </span>
+    <header className="fixed top-4 left-0 right-0 z-50 flex justify-center px-4">
+      <nav
+        className={
+          "flex w-full max-w-3xl items-center justify-between rounded-full border px-4 py-2.5 backdrop-blur transition-shadow duration-300 " +
+          c.border +
+          " " +
+          c.navBg +
+          " " +
+          (scrolled ? "shadow-lg" : "shadow-sm")
+        }
+      >
+        <a href="#home" className={"px-2 font-mono text-sm font-semibold tracking-tight " + c.text}>
+          {t.brand}
+        </a>
 
-        {/* Desktop links */}
-        <div style={{ display: "flex", gap: 28, alignItems: "center" }}
-             className="desktop-nav">
-          {navLinks.map(l => (
-            <button key={l.target} onClick={() => handleNav(l.target)}
-              style={{ color: C.muted, fontSize: 14, fontWeight: 500, background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}
-              onMouseEnter={e => (e.target.style.color = C.text)}
-              onMouseLeave={e => (e.target.style.color = C.muted)}>
-              {l.label}
-            </button>
+        <ul className="hidden items-center gap-1 md:flex">
+          {navLinks.map((link) => (
+            <li key={link.href}>
+              <a
+                href={link.href}
+                className={"rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors duration-200 " + c.textMuted + " " + c.hover}
+              >
+                {link.label}
+              </a>
+            </li>
           ))}
-        </div>
+        </ul>
 
-        {/* Mobile hamburger */}
-        <button onClick={() => setMenuOpen(!menuOpen)}
-          className="mobile-menu-btn"
-          style={{ background: "none", border: "none", cursor: "pointer", color: C.text, display: "none", padding: 4 }}>
-          {menuOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={toggleDark}
+            aria-label="Toggle theme"
+            className={"hidden h-9 w-9 items-center justify-center rounded-full border transition-colors duration-200 md:flex " + c.border + " " + c.hover + " " + c.text}
+          >
+            {dark ? <Sun size={15} /> : <Moon size={15} />}
+          </button>
+          <button
+            onClick={toggleLang}
+            aria-label="Toggle language"
+            className={"hidden items-center gap-1 rounded-full border px-3 py-2 text-xs font-medium transition-colors duration-200 md:flex " + c.border + " " + c.hover + " " + c.text}
+          >
+            <Languages size={13} />
+            {t.toggleLangLabel}
+          </button>
+          <a
+            href="#contact"
+            className={"hidden rounded-full px-4 py-2 text-sm font-medium transition-transform duration-200 hover:-translate-y-0.5 md:inline-block " + c.primaryBtn}
+          >
+            {t.nav.contactBtn}
+          </a>
+          <button
+            className={"rounded-full p-2 md:hidden " + c.text}
+            onClick={() => setOpen((v) => !v)}
+            aria-label="Toggle navigation"
+          >
+            {open ? <X size={18} /> : <Menu size={18} />}
+          </button>
+        </div>
       </nav>
 
-      {/* Mobile menu dropdown */}
-      {menuOpen && (
-        <div style={{
-          position: "fixed", top: 56, left: 0, right: 0, zIndex: 99,
-          background: C.surface, borderBottom: `1px solid ${C.border}`,
-          display: "flex", flexDirection: "column",
-          padding: "12px 0",
-        }}
-        className="mobile-dropdown">
-          {navLinks.map(l => (
-            <button key={l.target} onClick={() => handleNav(l.target)}
-              style={{ color: C.text, fontSize: 15, fontWeight: 500, background: "none", border: "none", cursor: "pointer", padding: "12px 24px", textAlign: "left" }}>
-              {l.label}
-            </button>
-          ))}
-        </div>
-      )}
-
-      <style>{`
-        @media (max-width: 640px) {
-          .desktop-nav { display: none !important; }
-          .mobile-menu-btn { display: block !important; }
-        }
-      `}</style>
-    </>
-  );
-}
-
-// ─── Hero ────────────────────────────────────────────────────────
-function Hero() {
-  // Replace this URL with your actual hosted image URL
-  const PHOTO_URL = "https://i.pravatar.cc/300?img=11"; // placeholder — replace with your real photo URL
-
-  return (
-    <section id="home" style={{
-      minHeight: "100vh", display: "flex", alignItems: "center",
-      padding: "120px 24px 80px", position: "relative", overflow: "hidden",
-    }}>
-      {/* Ambient decoration */}
-      <span aria-hidden style={{
-        position: "absolute", right: "6%", top: "28%",
-        fontSize: 200, fontWeight: 700, color: C.accent,
-        opacity: 0.035, fontFamily: "monospace", userSelect: "none", lineHeight: 1,
-      }}>{"{}"}</span>
-
-      <div style={{
-        maxWidth: 760, margin: "0 auto", width: "100%",
-        display: "flex", alignItems: "center", gap: 56,
-        flexWrap: "wrap",
-      }}>
-        {/* Photo */}
-        <div style={{ flexShrink: 0 }}>
-          <div style={{
-            width: 140, height: 140, borderRadius: "50%",
-            overflow: "hidden",
-            border: `2px solid ${C.border}`,
-            background: C.accentMuted,
-          }}>
-            <img
-              src={img}
-              alt="Abdallah Mohamed"
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            />
-          </div>
-        </div>
-
-        {/* Text */}
-        <div style={{ flex: 1, minWidth: 260 }}>
-          <p style={{ fontSize: 13, color: C.accent, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 16, margin: "0 0 16px" }}>
-            Backend Developer
-          </p>
-          <h1 style={{ fontSize: "clamp(36px, 5.5vw, 64px)", fontWeight: 700, color: C.text, lineHeight: 1.08, letterSpacing: "-0.03em", margin: "0 0 20px" }}>
-            Abdallah<br />Mohamed
-          </h1>
-          <p style={{ fontSize: 16, color: C.muted, lineHeight: 1.65, maxWidth: 420, margin: "0 0 36px" }}>
-            CS student at Mansoura University, building scalable APIs with Node.js, Express, and MongoDB.
-          </p>
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <button onClick={() => scrollTo("projects")}
-              style={{ padding: "10px 22px", background: C.accent, color: "#fff", border: "none", borderRadius: 99, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
-              View Projects
-            </button>
-            <button onClick={() => scrollTo("contact")}
-              style={{ padding: "10px 22px", background: "transparent", color: C.text, border: `1.5px solid ${C.border}`, borderRadius: 99, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
-              Get in Touch
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─── About ───────────────────────────────────────────────────────
-function About() {
-  const [ref, visible] = useReveal();
-  return (
-    <section id="about" style={{ padding: "80px 24px", background: C.surface }}>
-      <Divider />
-      <div ref={ref} style={{ maxWidth: 680, margin: "60px auto 0", ...revealStyle(visible) }}>
-        <p style={{ fontSize: 11, color: C.accent, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 16 }}>About</p>
-        <h2 style={{ fontSize: "clamp(24px, 3.5vw, 36px)", fontWeight: 700, color: C.text, letterSpacing: "-0.02em", margin: "0 0 24px", lineHeight: 1.2 }}>
-          Building toward a backend internship through real projects.
-        </h2>
-        <p style={{ fontSize: 16, color: C.muted, lineHeight: 1.7, margin: "0 0 16px" }}>
-          Second-year CS student at Mansoura University (Faculty of Computer & Information Sciences), with a backend-first focus. Completed both a Frontend/React Diploma and a Node.js Backend Diploma through Route Academy.
-        </p>
-        <p style={{ fontSize: 16, color: C.muted, lineHeight: 1.7 }}>
-          I build in public — documenting the journey on YouTube and Instagram under{" "}
-          <span style={{ color: C.text, fontWeight: 500 }}>Big-Abdallah</span>.
-        </p>
-      </div>
-    </section>
-  );
-}
-
-// ─── Skills ──────────────────────────────────────────────────────
-function Skills() {
-  const [ref, visible] = useReveal();
-  return (
-    <section id="skills" style={{ padding: "80px 24px", background: C.bg }}>
-      <Divider />
-      <div ref={ref} style={{ maxWidth: 680, margin: "60px auto 0", ...revealStyle(visible) }}>
-        <p style={{ fontSize: 11, color: C.accent, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 40 }}>Tech Stack</p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 32 }}>
-          {Object.entries(skills).map(([cat, list]) => (
-            <div key={cat}>
-              <p style={{ fontSize: 12, color: C.muted, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 12, margin: "0 0 12px" }}>{cat}</p>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                {list.map(s => <Tag key={s} label={s} accent={cat === "Backend"} />)}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─── Experience ──────────────────────────────────────────────────
-function Experience() {
-  const [ref, visible] = useReveal();
-  return (
-    <section id="experience" style={{ padding: "80px 24px", background: C.surface }}>
-      <Divider />
-      <div ref={ref} style={{ maxWidth: 680, margin: "60px auto 0", ...revealStyle(visible) }}>
-        <p style={{ fontSize: 11, color: C.accent, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 40 }}>Experience</p>
-        {experience.map((e, i) => (
-          <div key={i}>
-            <div style={{ padding: "24px 0", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap" }}>
-              <div>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
-                  <p style={{ fontSize: 16, fontWeight: 600, color: C.text, margin: 0 }}>{e.role}</p>
-                  {e.current && (
-                    <span style={{ fontSize: 11, fontWeight: 600, color: C.accent, background: C.accentMuted, padding: "2px 8px", borderRadius: 99 }}>
-                      Current
-                    </span>
-                  )}
-                </div>
-                <p style={{ fontSize: 14, color: C.accent, margin: "0 0 8px" }}>{e.org}</p>
-                <p style={{ fontSize: 14, color: C.muted, margin: 0, lineHeight: 1.6 }}>{e.desc}</p>
-              </div>
-              <p style={{ fontSize: 13, color: C.muted, whiteSpace: "nowrap", margin: 0 }}>{e.period}</p>
-            </div>
-            {i < experience.length - 1 && <Divider />}
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-// ─── Projects ────────────────────────────────────────────────────
-function Projects() {
-  const [ref, visible] = useReveal();
-  return (
-    <section id="projects" style={{ padding: "80px 24px", background: C.bg }}>
-      <Divider />
-      <div ref={ref} style={{ maxWidth: 680, margin: "60px auto 0", ...revealStyle(visible) }}>
-        <p style={{ fontSize: 11, color: C.accent, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 40 }}>Projects</p>
-        {projects.map((p, i) => (
-          <div key={i}>
-            <div style={{ padding: "28px 0" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8, flexWrap: "wrap", gap: 8 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <h3 style={{ fontSize: 17, fontWeight: 700, color: C.text, margin: 0 }}>{p.name}</h3>
-                  <Tag label={p.type} />
-                </div>
-                <div style={{ display: "flex", gap: 16 }}>
-                  {p.github && p.github !== "#" && (
-                    <a href={p.github} target="_blank" rel="noreferrer"
-                      style={{ color: C.muted, display: "flex", alignItems: "center", gap: 4, fontSize: 13, textDecoration: "none", fontWeight: 500 }}>
-                      <Github size={13} /> Code
-                    </a>
-                  )}
-                  {p.demo && p.demo !== "#" && (
-                    <a href={p.demo} target="_blank" rel="noreferrer"
-                      style={{ color: C.accent, display: "flex", alignItems: "center", gap: 4, fontSize: 13, textDecoration: "none", fontWeight: 500 }}>
-                      <ExternalLink size={13} /> Demo
-                    </a>
-                  )}
-                </div>
-              </div>
-              <p style={{ fontSize: 14, color: C.muted, lineHeight: 1.65, margin: "0 0 12px" }}>{p.description}</p>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                {p.tech.map(t => <Tag key={t} label={t} />)}
-              </div>
-            </div>
-            {i < projects.length - 1 && <Divider />}
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-// ─── Contact ─────────────────────────────────────────────────────
-function Contact() {
-  const [ref, visible] = useReveal();
-  const links = [
-    { icon: <Mail size={15} />, label: "swe.abdallah.m@icloud.com", href: "mailto:swe.abdallah.m@icloud.com" },
-    { icon: <Linkedin size={15} />, label: "LinkedIn", href: "https://www.linkedin.com/in/engabdallahmohamed/" },
-    { icon: <Github size={15} />, label: "GitHub", href: "https://github.com/MrLazyC0der" },
-  ];
-  return (
-    <section id="contact" style={{ padding: "80px 24px 100px", background: C.surface }}>
-      <Divider />
-      <div ref={ref} style={{ maxWidth: 680, margin: "60px auto 0", ...revealStyle(visible) }}>
-        <p style={{ fontSize: 11, color: C.accent, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 16 }}>Contact</p>
-        <h2 style={{ fontSize: "clamp(24px, 3.5vw, 36px)", fontWeight: 700, color: C.text, letterSpacing: "-0.02em", margin: "0 0 40px", lineHeight: 1.2 }}>
-          Open to backend internship<br />and junior opportunities.
-        </h2>
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-          {links.map(({ icon, label, href }) => (
-            <a key={label} href={href} target="_blank" rel="noreferrer"
-              style={{
-                display: "flex", alignItems: "center", gap: 8,
-                padding: "10px 18px", border: `1.5px solid ${C.border}`,
-                borderRadius: 99, fontSize: 13, fontWeight: 500, color: C.text,
-                textDecoration: "none", background: C.bg, transition: "border-color 0.2s",
-              }}
-              onMouseEnter={e => (e.currentTarget.style.borderColor = C.accent)}
-              onMouseLeave={e => (e.currentTarget.style.borderColor = C.border)}>
-              {icon} {label} <ArrowUpRight size={11} color={C.muted} />
+      {open && (
+        <div className={"absolute top-16 w-11/12 max-w-3xl rounded-2xl border p-3 shadow-xl md:hidden " + c.border + " " + c.surface}>
+          {navLinks.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              onClick={() => setOpen(false)}
+              className={"block rounded-xl px-4 py-2.5 text-sm font-medium " + c.text + " " + c.hover}
+            >
+              {link.label}
             </a>
           ))}
+          <div className="mt-2 flex items-center gap-2">
+            <button
+              onClick={toggleDark}
+              className={"flex flex-1 items-center justify-center gap-1.5 rounded-xl border px-4 py-2.5 text-sm font-medium " + c.border + " " + c.text}
+            >
+              {dark ? <Sun size={14} /> : <Moon size={14} />}
+              {dark ? "Light" : "Dark"}
+            </button>
+            <button
+              onClick={toggleLang}
+              className={"flex flex-1 items-center justify-center gap-1.5 rounded-xl border px-4 py-2.5 text-sm font-medium " + c.border + " " + c.text}
+            >
+              <Languages size={14} />
+              {t.toggleLangLabel}
+            </button>
+          </div>
+          <a
+            href="#contact"
+            onClick={() => setOpen(false)}
+            className={"mt-2 block rounded-xl px-4 py-2.5 text-center text-sm font-medium " + c.primaryBtn}
+          >
+            {t.nav.contactBtn}
+          </a>
         </div>
+      )}
+    </header>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Hero                                                                */
+/* ------------------------------------------------------------------ */
+
+function Hero() {
+  const { dark } = useTheme();
+  const { t, dir } = useLang();
+  const c = getColors(dark);
+  const textAlign = dir === "rtl" ? "text-right" : "text-left";
+  const mdTextAlign = dir === "rtl" ? "md:text-right" : "md:text-left";
+  const arrowRotate = dir === "rtl" ? "rotate-180" : "";
+
+  return (
+    <section id="home" className="relative mx-auto max-w-6xl overflow-hidden px-4 pt-32 md:pt-40">
+      <span
+        aria-hidden="true"
+        className={"pointer-events-none absolute -left-6 top-16 select-none font-mono text-9xl font-bold opacity-5 " + c.text}
+      >
+        {"{}"}
+      </span>
+      <span
+        aria-hidden="true"
+        className={"pointer-events-none absolute -right-4 bottom-0 select-none font-mono text-9xl font-bold opacity-5 " + c.text}
+      >
+        {"</>"}
+      </span>
+
+      <Card className={"relative flex flex-col items-center gap-10 px-6 py-14 text-center md:flex-row md:items-center md:px-16 md:py-20 " + mdTextAlign}>
+        <div className={"flex h-32 w-32 shrink-0 items-center justify-center rounded-full border font-mono text-3xl font-semibold md:h-40 md:w-40 " + c.border + " " + c.surfaceAlt + " " + c.text}>
+          <img src="/src/assets/photo.jpg" className="h-32 w-32 rounded-full object-cover ..." />
+        </div>
+
+        <div className="flex flex-col items-center md:items-start">
+          <Eyebrow>{t.hero.eyebrow}</Eyebrow>
+
+          <h1 className={"mt-4 max-w-2xl text-4xl font-bold leading-tight tracking-tight md:text-6xl " + c.text}>
+            {t.hero.name}
+          </h1>
+
+          <p className={"mt-6 max-w-xl text-base leading-relaxed md:text-lg " + c.textMuted}>
+            {t.hero.description}
+          </p>
+
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+            <a
+              href="#projects"
+              className={"flex items-center justify-center gap-1.5 rounded-full px-6 py-3 text-sm font-medium transition-transform duration-200 hover:-translate-y-0.5 " + c.primaryBtn}
+            >
+              {t.hero.viewProjects} <ArrowRight size={14} className={arrowRotate} />
+            </a>
+            <a
+              href="#contact"
+              className={"flex items-center justify-center gap-1.5 rounded-full border px-6 py-3 text-sm font-medium transition-colors duration-200 " + c.ghostBtn}
+            >
+              {t.hero.contactMe}
+            </a>
+          </div>
+        </div>
+      </Card>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  About                                                              */
+/* ------------------------------------------------------------------ */
+
+function AboutSection() {
+  const { dark } = useTheme();
+  const { t } = useLang();
+  const c = getColors(dark);
+  return (
+    <section id="about" className="mx-auto mt-6 max-w-6xl scroll-mt-24 px-4">
+      <Reveal>
+        <Card className="grid grid-cols-1 gap-8 p-8 md:grid-cols-3 md:p-12">
+          <div>
+            <Eyebrow>{t.about.eyebrow}</Eyebrow>
+            <h2 className={"mt-2 text-2xl font-bold tracking-tight md:text-3xl " + c.text}>{t.about.heading}</h2>
+          </div>
+          <div className="space-y-4 md:col-span-2">
+            <p className={"text-base leading-relaxed " + c.textMuted}>{t.about.p1}</p>
+            <p className={"text-base leading-relaxed " + c.textMuted}>{t.about.p2}</p>
+            <p className={"text-base leading-relaxed " + c.textMuted}>{t.about.p3}</p>
+          </div>
+        </Card>
+      </Reveal>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Skills                                                             */
+/* ------------------------------------------------------------------ */
+
+function SkillsSection() {
+  const { dark } = useTheme();
+  const { t } = useLang();
+  const c = getColors(dark);
+  const skills = getSkills(t);
+
+  return (
+    <section id="skills" className="mx-auto mt-6 max-w-6xl scroll-mt-24 px-4">
+      <Reveal>
+        <div className="mb-6">
+          <Eyebrow>{t.skillsSection.eyebrow}</Eyebrow>
+          <h2 className={"mt-2 text-2xl font-bold tracking-tight md:text-3xl " + c.text}>{t.skillsSection.heading}</h2>
+        </div>
+      </Reveal>
+
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        {skills.map(({ category, icon: Icon, items, emphasis }, i) => (
+          <Reveal key={category} delay={i * 80} className={emphasis ? "md:col-span-2" : ""}>
+            <Card className={"p-6 md:p-7 " + (emphasis ? "border-2 " + c.emphasisBorder : "")}>
+              <div className="mb-4 flex items-center gap-2">
+                <Icon size={16} className={emphasis ? c.emphasisAccent : c.text} />
+                <span className={"font-mono text-xs font-semibold uppercase tracking-widest " + (emphasis ? c.emphasisAccent : c.text)}>
+                  {category}
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {items.map((item) => (
+                  <span
+                    key={item}
+                    className={"rounded-full border px-3 py-1 text-xs font-medium transition-colors duration-200 " + c.chip}
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </Card>
+          </Reveal>
+        ))}
       </div>
     </section>
   );
 }
 
-// ─── App ─────────────────────────────────────────────────────────
-export default function Portfolio() {
+/* ------------------------------------------------------------------ */
+/*  Training                                                           */
+/* ------------------------------------------------------------------ */
+
+function CertificateFrame() {
+  const { dark } = useTheme();
+  const { t } = useLang();
+  const c = getColors(dark);
+
   return (
-    <div style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", background: C.bg, color: C.text, minHeight: "100vh" }}>
-      <Nav />
-      <Hero />
-      <About />
-      <Skills />
-      <Experience />
-      <Projects />
-      <Contact />
-      <div style={{ borderTop: `1px solid ${C.border}`, padding: "24px", textAlign: "center" }}>
-        <p style={{ fontSize: 12, color: C.muted, margin: 0 }}>© 2025 Abdallah Mohamed · Built with React</p>
+    <a
+      href={CERTIFICATE_IMAGE}
+      target="_blank"
+      rel="noreferrer"
+      className="group block"
+      aria-label={t.certificate.view}
+    >
+      <div className={"rounded-2xl border p-3 transition-colors duration-300 " + c.border + " " + c.surfaceAlt}>
+        <div className={"overflow-hidden rounded-xl border " + c.border}>
+          <img
+            src={CERTIFICATE_IMAGE}
+            alt={t.certificate.caption + " — " + t.certificate.issuer}
+            className="aspect-[16/11] w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        </div>
+        <div className="mt-3 flex items-center justify-between gap-3 px-1">
+          <span className="min-w-0">
+            <span className={"block truncate text-sm font-semibold " + c.text}>{t.certificate.caption}</span>
+            <span className={"block text-xs " + c.textFaint}>{t.certificate.issuer}</span>
+          </span>
+          <span
+            className={
+              "shrink-0 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors duration-200 " + c.chip
+            }
+          >
+            {t.certificate.view}
+          </span>
+        </div>
       </div>
-    </div>
+    </a>
+  );
+}
+
+function TrainingSection() {
+  const { dark } = useTheme();
+  const { t } = useLang();
+  const c = getColors(dark);
+  const stages = getTrainingStages(t);
+
+  return (
+    <section id="training" className="mx-auto mt-6 max-w-6xl scroll-mt-24 px-4">
+      <Reveal>
+        <Card className="p-8 md:p-10">
+          <Eyebrow>{t.training.eyebrow}</Eyebrow>
+          <h2 className={"mt-2 text-2xl font-bold tracking-tight md:text-3xl " + c.text}>{t.training.heading}</h2>
+          <p className={"mt-2 text-sm font-medium " + c.textMuted}>{t.training.subtitle}</p>
+
+          <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-5">
+            <div className="space-y-3 md:col-span-3">
+              {stages.map((s) => (
+                <div
+                  key={s.stage}
+                  className={
+                    "flex flex-col gap-1 rounded-2xl p-5 sm:flex-row sm:items-center sm:justify-between " +
+                    (s.emphasis ? "border-2 " + c.emphasisBorder + " " + c.surfaceAlt : "border " + c.border + " " + c.surfaceAlt)
+                  }
+                >
+                  <div className="flex items-center gap-3">
+                    <span className={"h-2 w-2 shrink-0 rounded-full " + (s.emphasis ? c.dot : c.dotMuted)} />
+                    <span className={"font-mono text-sm font-semibold " + (s.emphasis ? c.emphasisAccent : c.text)}>{s.stage}</span>
+                  </div>
+                  <span className={"text-xs font-medium " + c.textFaint}>{s.range}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="md:col-span-2">
+              <CertificateFrame />
+            </div>
+          </div>
+        </Card>
+      </Reveal>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Projects                                                           */
+/* ------------------------------------------------------------------ */
+
+function ProjectCard({ project, index }) {
+  const { dark } = useTheme();
+  const { t, dir } = useLang();
+  const c = getColors(dark);
+  const arrowRotate = dir === "rtl" ? "rotate-180" : "";
+
+  return (
+    <Reveal delay={index * 90}>
+      <Card className="flex h-full flex-col p-7">
+        <div className="mb-4 flex items-center justify-between">
+          <div className={"flex h-10 w-10 items-center justify-center rounded-xl border font-mono text-sm font-semibold " + c.border + " " + c.surfaceAlt + " " + c.text}>
+            {project.title.charAt(0)}
+          </div>
+          <span className={"rounded-full border px-2.5 py-1 font-mono text-xs font-medium " + c.border + " " + c.surfaceAlt + " " + c.textFaint}>
+            {project.type}
+          </span>
+        </div>
+
+        <h4 className={"text-lg font-semibold " + c.text}>{project.title}</h4>
+        <p className={"mt-3 flex-1 text-sm leading-relaxed " + c.textMuted}>{project.description}</p>
+
+        <div className="mt-5 flex flex-wrap gap-1.5">
+          {project.tags.map((tag) => (
+            <span key={tag} className={"rounded-full border px-2.5 py-1 text-xs font-medium " + c.border + " " + c.surfaceAlt + " " + c.textMuted}>
+              {tag}
+            </span>
+          ))}
+        </div>
+
+        <div className={"mt-6 border-t pt-4 " + c.border}>
+          <a
+            href={project.githubUrl}
+            target="_blank"
+            rel="noreferrer"
+            className={"flex w-fit items-center gap-1.5 text-sm font-medium transition-opacity hover:opacity-60 " + c.text}
+          >
+            {t.projectsSection.viewGithub} <ArrowUpRight size={14} className={arrowRotate} />
+          </a>
+        </div>
+
+        
+      </Card>
+    </Reveal>
+  );
+}
+
+function ProjectsSection() {
+  const { dark } = useTheme();
+  const { t } = useLang();
+  const c = getColors(dark);
+  const projects = getProjects(t);
+
+  return (
+    <section id="projects" className="mx-auto mt-6 max-w-6xl scroll-mt-24 px-4">
+      <Reveal>
+        <div className="mb-6">
+          <Eyebrow>{t.projectsSection.eyebrow}</Eyebrow>
+          <h2 className={"mt-2 text-2xl font-bold tracking-tight md:text-3xl " + c.text}>{t.projectsSection.heading}</h2>
+        </div>
+      </Reveal>
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+        {projects.map((project, i) => (
+          <ProjectCard key={project.title} project={project} index={i} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Contact                                                             */
+/* ------------------------------------------------------------------ */
+
+function ContactSection() {
+  const { dark } = useTheme();
+  const { t } = useLang();
+  const c = getColors(dark);
+  const contactInfo = getContactInfo(t);
+
+  return (
+    <section id="contact" className="mx-auto mt-6 max-w-6xl scroll-mt-24 px-4">
+      <Reveal>
+        <Card className="p-8 md:p-12">
+          <div className="mb-8 text-center">
+            <Eyebrow>{t.contactSection.eyebrow}</Eyebrow>
+            <h2 className={"mt-2 text-2xl font-bold tracking-tight md:text-3xl " + c.text}>{t.contactSection.heading}</h2>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
+            {contactInfo.map(({ icon: Icon, label, value, href }) => {
+              const inner = (
+                <div className={"flex items-center gap-3 rounded-2xl border px-4 py-3.5 transition-colors duration-200 " + c.border + " " + c.surfaceAlt}>
+                  <span className={"flex h-9 w-9 shrink-0 items-center justify-center rounded-full " + c.iconRing}>
+                    <Icon size={15} />
+                  </span>
+                  <span className="min-w-0">
+                    <span className={"block font-mono text-xs uppercase tracking-wide " + c.textFaint}>{label}</span>
+                    <span className={"block truncate text-sm font-medium " + c.text}>{value}</span>
+                  </span>
+                </div>
+              );
+              return href ? (
+                <a key={label} href={href} target={href.startsWith("http") ? "_blank" : undefined} rel="noreferrer">
+                  {inner}
+                </a>
+              ) : (
+                <div key={label}>{inner}</div>
+              );
+            })}
+          </div>
+        </Card>
+      </Reveal>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Footer                                                              */
+/* ------------------------------------------------------------------ */
+
+function Footer() {
+  const { dark } = useTheme();
+  const { t } = useLang();
+  const c = getColors(dark);
+
+  return (
+    <footer className="mx-auto mt-6 max-w-6xl px-4 pb-10">
+      <Card className="flex flex-col items-center gap-5 px-6 py-10 text-center md:px-16">
+        <div>
+          <h3 className={"text-xl font-bold tracking-tight " + c.text}>{t.hero.name}</h3>
+          <p className={"mt-1 text-sm " + c.textMuted}>{t.footer.role}</p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <a
+            href="https://www.linkedin.com/in/engabdallahmohamed/"
+            target="_blank"
+            rel="noreferrer"
+            className={"flex h-10 w-10 items-center justify-center rounded-full border transition-colors " + c.border + " " + c.text + " " + c.hover}
+            aria-label="LinkedIn"
+          >
+            <Linkedin size={16} />
+          </a>
+          <a
+            href="https://github.com/Big-Abdallah"
+            target="_blank"
+            rel="noreferrer"
+            className={"flex h-10 w-10 items-center justify-center rounded-full border transition-colors " + c.border + " " + c.text + " " + c.hover}
+            aria-label="GitHub"
+          >
+            <Github size={16} />
+          </a>
+          <a
+            href="mailto:swe.abdallah.m@icloud.com"
+            className={"flex h-10 w-10 items-center justify-center rounded-full border transition-colors " + c.border + " " + c.text + " " + c.hover}
+            aria-label="Email"
+          >
+            <Mail size={16} />
+          </a>
+        </div>
+
+        <p className={"font-mono text-xs " + c.textFaint}>{t.footer.copyright}</p>
+      </Card>
+    </footer>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Root                                                                */
+/* ------------------------------------------------------------------ */
+
+export default function PortfolioSite() {
+  const [dark, setDark] = useState(false);
+  const [lang, setLang] = useState("en");
+  const t = TRANSLATIONS[lang];
+  const dir = t.dir;
+  const c = getColors(dark);
+
+  const themeValue = { dark, toggleDark: () => setDark((v) => !v) };
+  const langValue = { lang, dir, t, toggleLang: () => setLang((v) => (v === "en" ? "ar" : "en")) };
+
+  return (
+    <ThemeContext.Provider value={themeValue}>
+      <LangContext.Provider value={langValue}>
+        <div
+          dir={dir}
+          lang={lang}
+          className={"min-h-screen w-full antialiased transition-colors duration-300 " + c.bg + " " + c.text}
+          style={{ scrollBehavior: "smooth", fontFamily: lang === "ar" ? "'Tajawal','Segoe UI',sans-serif" : undefined }}
+        >
+          <Navbar />
+          <Hero />
+          <AboutSection />
+          <SkillsSection />
+          <TrainingSection />
+          <ProjectsSection />
+          <ContactSection />
+          <Footer />
+        </div>
+      </LangContext.Provider>
+    </ThemeContext.Provider>
   );
 }
